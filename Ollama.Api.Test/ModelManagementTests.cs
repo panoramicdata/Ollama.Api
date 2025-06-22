@@ -134,6 +134,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 			{
 				return; // Pass
 			}
+
 			throw;
 		}
 	}
@@ -170,6 +171,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 			{
 				return; // Pass
 			}
+
 			throw;
 		}
 	}
@@ -185,6 +187,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 			{
 				return; // Pass
 			}
+
 			throw new Exception($"Expected error status or exception for missing model, got: {response?.Status}");
 		}
 		catch (Refit.ApiException ex)
@@ -193,6 +196,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 			{
 				return; // Pass
 			}
+
 			throw;
 		}
 	}
