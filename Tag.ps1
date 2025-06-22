@@ -3,6 +3,13 @@
 
 $ErrorActionPreference = 'Stop'
 
+# Parse arguments
+$force = $false
+if ($args -contains '--force') {
+    $force = $true
+    Write-Host "[WARNING] --force specified: Will publish even if unit tests fail."
+}
+
 # Variables
 $solution = "Ollama.Api.sln"
 $project = "Ollama.Api/Ollama.Api.csproj"
@@ -53,8 +60,12 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "Running unit tests..."
 $testResult = dotnet test $solution --configuration Release --no-build
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Unit tests failed. Aborting release."
-    exit 1
+    if (-not $force) {
+        Write-Error "Unit tests failed. Aborting release. (Use --force to override)"
+        exit 1
+    } else {
+        Write-Host "[WARNING] Unit tests failed, but continuing due to --force."
+    }
 }
 
 # Get version from Nerdbank.GitVersioning
