@@ -4,6 +4,17 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<RepositoryUrl>https://github.com/panoramicdata/Ollama.Api</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Copyright>Copyright © Panoramic Data Limited 2025</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Description>.NET 9 library for interacting with Ollama-compatible AI model APIs. Provides strongly-typed interfaces for chat, text generation, embeddings, and model management.</Description>
+		<Authors>Panoramic Data Limited</Authors>
+		<Company>Panoramic Data Limited</Company>
+		<PackageTags>ollama;ai;api;dotnet;ml;machinelearning;chat;generation;embeddings</PackageTags>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageIcon>Logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -12,7 +23,13 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-	    <PackageReference Include="Refit" Version="8.0.0" />
-  </ItemGroup>
+		<PackageReference Include="Refit" Version="8.0.0" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="Logo.png" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 </Project>
