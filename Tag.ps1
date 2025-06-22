@@ -15,17 +15,52 @@ if (!(Test-Path $tokenFile)) {
 }
 $nugetToken = Get-Content $tokenFile | Select-Object -First 1
 
+# Ensure dotnet-nbgv is installed
+if (-not (Get-Command "dotnet-nbgv" -ErrorAction SilentlyContinue)) {
+    Write-Host "dotnet-nbgv not found. Installing..."
+    dotnet tool install -g nbgv
+    $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
+}
+
+# Ensure git working directory is clean and up to date
+Write-Host "Checking git status..."
+$gitStatus = git status --porcelain
+if ($gitStatus) {
+    Write-Error "You have uncommitted changes. Please commit or stash them before running this script."
+    exit 1
+}
+
+Write-Host "Fetching latest from origin..."
+git fetch origin
+
+Write-Host "Checking for unpushed commits..."
+$localHash = git rev-parse '@'
+$remoteHash = git rev-parse '@{u}'
+if ($localHash -ne $remoteHash) {
+    Write-Error "Your branch is not in sync with origin. Please push or pull changes before running this script."
+    exit 1
+}
+
 # Build
 Write-Host "Building solution..."
 dotnet build $solution --configuration Release
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Build failed. Aborting release."
+    exit 1
+}
 
 # Test
 Write-Host "Running unit tests..."
-dotnet test $solution --configuration Release --no-build
+$testResult = dotnet test $solution --configuration Release --no-build
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Unit tests failed. Aborting release."
+    exit 1
+}
 
 # Get version from Nerdbank.GitVersioning
-$version = dotnet nbgv get-version --variable NuGetPackageVersion
-if (-not $version) {
+$version = dotnet nbgv get-version --variable NuGetPackageVersion | Out-String
+$version = $version.Trim()
+if (-not $version -or $version -match 'Possible reasons') {
     Write-Error "Could not determine version from Nerdbank.GitVersioning."
     exit 1
 }
