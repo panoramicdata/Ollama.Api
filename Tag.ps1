@@ -22,9 +22,9 @@ if (!(Test-Path $tokenFile)) {
 }
 $nugetToken = Get-Content $tokenFile | Select-Object -First 1
 
-# Ensure dotnet-nbgv is installed
-if (-not (Get-Command "dotnet-nbgv" -ErrorAction SilentlyContinue)) {
-    Write-Host "dotnet-nbgv not found. Installing..."
+# Ensure nbgv is installed
+if (-not (Get-Command "nbgv" -ErrorAction SilentlyContinue)) {
+    Write-Host "nbgv not found. Installing..."
     dotnet tool install -g nbgv
     $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
 }
@@ -69,9 +69,10 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Get version from Nerdbank.GitVersioning
-$version = dotnet nbgv get-version --variable NuGetPackageVersion | Out-String
-$version = $version.Trim()
-if (-not $version -or $version -match 'Possible reasons') {
+$nbgvOutput = nbgv get-version
+$versionLine = $nbgvOutput | Select-String 'NuGetPackageVersion:'
+$version = $versionLine -replace 'NuGetPackageVersion:\s*', '' -replace '\s', ''
+if (-not $version) {
     Write-Error "Could not determine version from Nerdbank.GitVersioning."
     exit 1
 }
