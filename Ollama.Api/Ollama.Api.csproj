@@ -11,6 +11,7 @@
 		<Description>.NET 9 library for interacting with Ollama-compatible AI model APIs. Provides strongly-typed interfaces for chat, text generation, embeddings, and model management.</Description>
 		<Authors>Panoramic Data Limited</Authors>
 		<Company>Panoramic Data Limited</Company>
+		<PackageId>Ollama.Api</PackageId>
 		<PackageTags>ollama;ai;api;dotnet;ml;machinelearning;chat;generation;embeddings</PackageTags>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<RepositoryType>git</RepositoryType>
