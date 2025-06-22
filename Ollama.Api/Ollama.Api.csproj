@@ -7,7 +7,7 @@
 		<RepositoryUrl>https://github.com/panoramicdata/Ollama.Api</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Copyright>Copyright © Panoramic Data Limited 2025</Copyright>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReadmeFile>../README.md</PackageReadmeFile>
 		<Description>.NET 9 library for interacting with Ollama-compatible AI model APIs. Provides strongly-typed interfaces for chat, text generation, embeddings, and model management.</Description>
 		<Authors>Panoramic Data Limited</Authors>
 		<Company>Panoramic Data Limited</Company>
@@ -28,7 +28,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="" />
+		<None Include="../README.md" Pack="true" PackagePath="" />
 		<None Include="Logo.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 
