@@ -4,9 +4,9 @@ using Refit;
 namespace Ollama.Api.Interfaces;
 
 /// <summary>
-/// The Ollama Embeddings API endpoints
+/// Generates numerical vector representations (embeddings) for input text.
 /// </summary>
-public interface IEmbeddingsApi
+public interface IEmbeddings
 {
 	/// <summary>
 	/// Gets embeddings for the given input(s) using the specified model.

@@ -20,4 +20,19 @@ public class EmbeddingTests(Fixture fixture, ITestOutputHelper testOutputHelper)
 		response.Should().NotBeNull();
 		response.Embeddings.Should().NotBeNullOrEmpty();
 	}
+
+	[Fact]
+	public async Task Embeddings_MissingModel_Returns404()
+	{
+		var request = new EmbeddingRequest
+		{
+			Model = "not-a-real-model:fake",
+			Prompt = "test"
+		};
+		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
+		{
+			await OllamaClient.Embeddings.GetEmbeddingsAsync(request, default);
+		});
+		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+	}
 }

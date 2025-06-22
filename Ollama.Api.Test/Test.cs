@@ -7,6 +7,8 @@ namespace Ollama.Api.Test;
 
 public class Test : TestBed<Fixture>, IAsyncDisposable
 {
+	protected const string TestModel = "llama3:latest";
+
 	private readonly TestConfig _testPortalConfig;
 	protected OllamaClient OllamaClient { get; }
 

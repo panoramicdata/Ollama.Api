@@ -31,4 +31,20 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 		response.CreatedAt.Should().NotBeNull();
 		response.CreatedAt!.Value.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-5));
 	}
+
+	[Fact]
+	public async Task Generate_MissingModel_Returns404()
+	{
+		var request = new GenerateRequest
+		{
+			Model = "not-a-real-model:fake",
+			Prompt = "test",
+			Stream = false
+		};
+		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
+		{
+			await OllamaClient.Generate.GenerateAsync(request, default);
+		});
+		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+	}
 }
