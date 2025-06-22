@@ -206,6 +206,10 @@ PublishScripts/
 *.nuget.props
 *.nuget.targets
 
+# Ignore NuGet API key or token files
+nuget_token.txt
+*.nuget_token
+
 # Microsoft Azure Build Output
 csx/
 *.build.csdef
