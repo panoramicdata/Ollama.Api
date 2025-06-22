@@ -32,4 +32,8 @@
 		<None Include="Logo.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 
+	<Target Name="CopyReadmeForPack" BeforeTargets="Pack">
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\..\README.md" DestinationFolder="$(MSBuildProjectDirectory)" />
+	</Target>
+
 </Project>
