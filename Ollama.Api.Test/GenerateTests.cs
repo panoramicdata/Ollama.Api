@@ -1,5 +1,6 @@
 ﻿using AwesomeAssertions;
 using Ollama.Api.Models;
+using System.Text.Json.Serialization;
 using Xunit.Abstractions;
 
 namespace Ollama.Api.Test;
@@ -69,7 +70,16 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 		var request = new GenerateRequest
 		{
 			Model = LlavaModel,
-			Prompt = "Describe this image.",
+			Prompt = """
+Describe the animal in this image using the following JSON template:
+{
+	"animal": "<ANIMAL HERE>",
+	"color": "<COLOR HERE>",
+	"mood": "<ANIMAL'S MOOD HERE>",
+	"gender": "<ASSUME THE ANIMAL'S GENDER HERE>",
+	"name": "<GUESS THE ANIMAL's NAME HERE>",
+}
+""",
 			Images = [base64EncodedImage],
 			Stream = false
 		};
@@ -89,5 +99,35 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 		response.PromptEvalDuration.Should().BePositive();
 		response.CreatedAt.Should().NotBeNull();
 		response.CreatedAt!.Value.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-5));
+
+		// Check if the response contains valid JSON
+		var jsonResponse = response.Response.Trim();
+		jsonResponse.Should().StartWith("{").And.EndWith("}");
+		var animalDescription = System.Text.Json.JsonSerializer.Deserialize<AnimalDescription>(jsonResponse);
+		animalDescription.Should().NotBeNull();
+		animalDescription.Animal.Should().NotBeNullOrEmpty();
+		animalDescription.Color.Should().NotBeNullOrEmpty();
+		animalDescription.Mood.Should().NotBeNullOrEmpty();
+		animalDescription.Color.Should().NotBeNullOrEmpty();
+		animalDescription.Name.Should().NotBeNullOrEmpty();
+		animalDescription.Gender.Should().NotBeNullOrEmpty();
+	}
+
+	private class AnimalDescription
+	{
+		[JsonPropertyName("animal")]
+		public required string Animal { get; set; }
+
+		[JsonPropertyName("color")]
+		public required string Color { get; set; }
+
+		[JsonPropertyName("mood")]
+		public required string Mood { get; set; }
+
+		[JsonPropertyName("gender")]
+		public required string Gender { get; set; }
+
+		[JsonPropertyName("name")]
+		public required string Name { get; set; }
 	}
 }
