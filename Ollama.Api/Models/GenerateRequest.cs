@@ -64,7 +64,8 @@ public class GenerateRequest
 	public string? Suffix { get; set; }
 
 	/// <summary>
-	/// A list of base64-encoded images to be included with the prompt. Only applicable for multimodal models (e.g., llava).
+	/// A list of base64-encoded images to be included with the prompt.
+	/// Only applicable for multimodal models (e.g., llava).
 	/// </summary>
 	[JsonPropertyName("images")]
 	public List<string>? Images { get; set; }

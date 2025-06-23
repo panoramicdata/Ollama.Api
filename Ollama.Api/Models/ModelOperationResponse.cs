@@ -8,8 +8,13 @@ namespace Ollama.Api.Models;
 public class ModelOperationResponse
 {
 	/// <summary>
+	/// Any operation errors
+	/// </summary>
+	[JsonPropertyName("error")]
+	public string? Error { get; set; }
+	/// <summary>
 	/// The status of the operation (e.g., "success", "error").
 	/// </summary>
 	[JsonPropertyName("status")]
-	public required string Status { get; set; }
+	public string? Status { get; set; }
 }

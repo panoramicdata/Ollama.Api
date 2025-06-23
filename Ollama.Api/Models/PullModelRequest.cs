@@ -31,3 +31,4 @@ public class PullModelRequest
 	[JsonPropertyName("digest")]
 	public string? Digest { get; set; }
 }
+

@@ -19,6 +19,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageReleaseNotes>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/../CHANGELOG.md'))</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

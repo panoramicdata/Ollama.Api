@@ -1,8 +1,5 @@
 ﻿using Ollama.Api.Interfaces;
-using Ollama.Api.Models;
 using Refit;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 
 namespace Ollama.Api;
 
@@ -43,34 +40,6 @@ public class OllamaClient : IDisposable
 
 	/// <inheritdoc />
 	public IUtility Utility { get; }
-
-	public async IAsyncEnumerable<ModelOperationResponse> CreateModelStreamAsync(
-		CreateModelRequest request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		var response = await Models.CreateStreamAsync(request, cancellationToken);
-		response.EnsureSuccessStatusCode();
-		await foreach (var update in ReadNewlineDelimitedJsonAsync(response.Content.ReadAsStream(cancellationToken), cancellationToken))
-		{
-			yield return update;
-		}
-	}
-
-	public static async IAsyncEnumerable<ModelOperationResponse> ReadNewlineDelimitedJsonAsync(
-	Stream stream, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-	{
-		using var reader = new StreamReader(stream);
-		while (!reader.EndOfStream)
-		{
-			var line = await reader.ReadLineAsync(cancellationToken);
-			if (!string.IsNullOrWhiteSpace(line))
-			{
-				yield return JsonSerializer.Deserialize<ModelOperationResponse>(line)!;
-			}
-
-			if (cancellationToken.IsCancellationRequested)
-				yield break;
-		}
-	}
 
 	protected virtual void Dispose(bool disposing)
 	{
