@@ -1,5 +1,7 @@
 # Change Log
 
+* 2025-06-23 : 0.9.14
+	* Fixed logo
 * 2025-06-23 : 0.9.12
 	* Added unit tests for multi-modal requests including images.
 	* e.g. using Llava for image description.
