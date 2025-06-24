@@ -81,7 +81,8 @@ Describe the animal in this image using the following JSON template:
 }
 """,
 			Images = [base64EncodedImage],
-			Stream = false
+			Stream = false,
+			Format = "json",
 		};
 
 		var response = await OllamaClient.Generate.GenerateAsync(request, default);

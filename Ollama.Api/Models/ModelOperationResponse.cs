@@ -12,6 +12,7 @@ public class ModelOperationResponse
 	/// </summary>
 	[JsonPropertyName("error")]
 	public string? Error { get; set; }
+
 	/// <summary>
 	/// The status of the operation (e.g., "success", "error").
 	/// </summary>

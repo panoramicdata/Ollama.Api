@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace Ollama.Api.Models;
 
+/// <summary>
+/// Represents detailed information about a model.
+/// </summary>
 public class ModelDetails
 {
 	/// <summary>

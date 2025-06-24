@@ -26,10 +26,23 @@ public class ChatResponse
 	public ChatMessage? Message { get; set; }
 
 	/// <summary>
+	/// Tool calls the model wants to make (for tool use), at the top level.
+	/// </summary>
+	[JsonPropertyName("tool_calls")]
+	public List<ChatToolCall>? ToolCalls { get; set; }
+
+	/// <summary>
 	/// Indicates if the chat completion is complete.
 	/// </summary>
 	[JsonPropertyName("done")]
 	public bool Done { get; set; }
+
+	/// <summary>
+	/// If the chat completion is not done, this field contains the reason for completion.
+	/// </summary>
+	[JsonPropertyName("done_reason")]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public DoneReason? DoneReason { get; set; }
 
 	/// <summary>
 	/// Total duration of the request in nanoseconds.
@@ -42,6 +55,18 @@ public class ChatResponse
 	/// </summary>
 	[JsonPropertyName("load_duration")]
 	public long? LoadDuration { get; set; }
+
+	/// <summary>
+	/// Number of prompt tokens evaluated.
+	/// </summary>
+	[JsonPropertyName("prompt_eval_count")]
+	public int? PromptEvalCount { get; set; }
+
+	/// <summary>
+	/// Duration to evaluate the prompt in nanoseconds.
+	/// </summary>
+	[JsonPropertyName("prompt_eval_duration")]
+	public long? PromptEvalDuration { get; set; }
 
 	/// <summary>
 	/// Number of tokens evaluated during generation.

@@ -49,12 +49,67 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	}
 
 	[Fact]
+	public async Task ToolUse_Succeeds()
+	{
+		var request = new ChatRequest
+		{
+			Model = "llama3.1:8b",
+			Messages =
+			[
+				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now?" }
+			],
+			Stream = false,
+			Tools =
+			[
+				new() {
+					Type = McpType.Function,
+					Function = new ChatToolFunction
+					{
+						Name = "get_current_city_weather",
+						Description = "Get the current weather for the specified city",
+						InputSchema = new ChatToolFunctionInputSchema
+						{
+							Type = McpType.Object,
+							Properties = new Dictionary<string, ChatToolFunctionInputSchemaProperty>
+							{
+								{
+									"city",
+									new ChatToolFunctionInputSchemaProperty
+									{
+										Type = McpType.String,
+										Description = "The name of the city to get the weather for",
+									}
+								},
+								{
+									"unit",
+									new ChatToolFunctionInputSchemaProperty
+									{
+										Type = McpType.String,
+										Description = "The unit to return.  May be Celsius or Fahrenheit."
+									}
+								}
+							},
+							Required = [ "city", "unit" ]
+						}
+					}
+				}
+			]
+		};
+
+		var response = await OllamaClient.Chat.ChatAsync(request, CancellationToken.None);
+		response.Should().NotBeNull();
+		response.Message.Should().NotBeNull();
+		response.Message!.Content.Should().Contain("Paris");
+	}
+
+
+	[Fact]
 	public async Task Chat_MissingModel_Returns404()
 	{
 		var request = new ChatRequest
 		{
 			Model = "not-a-real-model:fake",
-			Messages = [ new ChatMessage { Role = "user", Content = "test" } ],
+			Messages = [new ChatMessage { Role = "user", Content = "test" }],
 			Stream = false
 		};
 		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>

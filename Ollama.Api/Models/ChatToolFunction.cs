@@ -5,8 +5,11 @@ namespace Ollama.Api.Models;
 public class ChatToolFunction
 {
 	[JsonPropertyName("name")]
-	public string? Name { get; set; }
+	public required string Name { get; set; }
 
-	[JsonPropertyName("arguments")]
-	public object? Arguments { get; set; }
+	[JsonPropertyName("description")]
+	public string? Description { get; set; }
+
+	[JsonPropertyName("inputSchema")]
+	public ChatToolFunctionInputSchema? InputSchema { get; set; }
 }

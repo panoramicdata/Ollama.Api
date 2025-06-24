@@ -8,8 +8,8 @@ namespace Ollama.Api.Models;
 public class ChatTool
 {
 	[JsonPropertyName("type")]
-	public string? Type { get; set; }
+	public required McpType Type { get; set; }
 
 	[JsonPropertyName("function")]
-	public ChatToolFunction? Function { get; set; }
+	public required ChatToolFunction Function { get; set; }
 }
