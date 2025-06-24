@@ -46,7 +46,7 @@ public class GenerateRequest
 	/// The model itself must be instructed to produce JSON for this to be effective.
 	/// </summary>
 	[JsonPropertyName("format")]
-	public string Format { get; set; } = "json";
+	public string? Format { get; set; }
 
 	/// <summary>
 	/// If true, the prompt is sent directly to the model without any built-in templating.
