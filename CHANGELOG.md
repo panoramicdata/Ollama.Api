@@ -1,5 +1,7 @@
 # Change Log
 
+* 2025-06-23 : 0.9.18
+	* Fixed bad default GenerateRequest.Format value
 * 2025-06-23 : 0.9.14
 	* Fixed logo
 * 2025-06-23 : 0.9.12
