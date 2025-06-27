@@ -53,7 +53,7 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	{
 		var request = new ChatRequest
 		{
-			Model = "llama3.1:8b",
+			Model = "qwen2:7b",
 			Messages =
 			[
 				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now?" }

@@ -1,5 +1,6 @@
 ﻿using Ollama.Api.Interfaces;
 using Refit;
+using System.Text.Json;
 
 namespace Ollama.Api;
 
@@ -19,11 +20,27 @@ public class OllamaClient : IDisposable
 			Timeout = TimeSpan.FromMinutes(30) // Some API calls such as model retrieval can take a very long time.
 		};
 
-		Generate = RestService.For<IGenerate>(_httpClient);
-		Embeddings = RestService.For<IEmbeddings>(_httpClient);
-		Chat = RestService.For<IChat>(_httpClient);
-		Models = RestService.For<IModels>(_httpClient);
-		Utility = RestService.For<IUtility>(_httpClient);
+		var serializerOptions = new JsonSerializerOptions
+		{
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Or whatever policy you use
+															   // Add other global options here
+		};
+
+#if DEBUG
+		// Conditionally add the strict converter for Debug builds
+		serializerOptions.Converters.Add(new StrictJsonConverterFactory());
+#endif
+
+		var refitSettings = new RefitSettings
+		{
+			ContentSerializer = new SystemTextJsonContentSerializer(serializerOptions)
+		};
+
+		Generate = RestService.For<IGenerate>(_httpClient, refitSettings);
+		Embeddings = RestService.For<IEmbeddings>(_httpClient, refitSettings);
+		Chat = RestService.For<IChat>(_httpClient, refitSettings);
+		Models = RestService.For<IModels>(_httpClient, refitSettings);
+		Utility = RestService.For<IUtility>(_httpClient, refitSettings);
 	}
 
 	/// <inheritdoc />
