@@ -26,12 +26,6 @@ public class ChatResponse
 	public ChatMessage? Message { get; set; }
 
 	/// <summary>
-	/// Tool calls the model wants to make (for tool use), at the top level.
-	/// </summary>
-	[JsonPropertyName("tool_calls")]
-	public List<ChatToolCall>? ToolCalls { get; set; }
-
-	/// <summary>
 	/// If the chat completion is not done, this field contains the reason for completion.
 	/// </summary>
 	[JsonPropertyName("done_reason")]

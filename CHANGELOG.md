@@ -1,6 +1,8 @@
 # Change Log
 
 * 2025-07-04 : 0.9.24
+	* Removed ToolCalls from root of ChatResponse.
+* 2025-07-04 : 0.9.24
 	* Fixed MCP support for Agentic models/clients.
 * 2025-07-04 : 0.9.23
 	* Fixed MCP support for Agentic models/clients.
