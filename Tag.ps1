@@ -56,16 +56,16 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# Test
-Write-Host "Running unit tests..."
-$testResult = dotnet test $solution --configuration Release --no-build
-if ($LASTEXITCODE -ne 0) {
-    if (-not $force) {
+# Test (skip if --force specified)
+if (-not $force) {
+    Write-Host "Running unit tests..."
+    $testResult = dotnet test $solution --configuration Release --no-build
+    if ($LASTEXITCODE -ne 0) {
         Write-Error "Unit tests failed. Aborting release. (Use --force to override)"
         exit 1
-    } else {
-        Write-Host "[WARNING] Unit tests failed, but continuing due to --force."
     }
+} else {
+    Write-Host "[INFO] Skipping unit tests due to --force."
 }
 
 # Get version from Nerdbank.GitVersioning
