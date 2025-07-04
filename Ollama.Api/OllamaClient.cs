@@ -26,11 +26,6 @@ public class OllamaClient : IDisposable
 															   // Add other global options here
 		};
 
-#if DEBUG
-		// Conditionally add the strict converter for Debug builds
-		serializerOptions.Converters.Add(new StrictJsonConverterFactory());
-#endif
-
 		var refitSettings = new RefitSettings
 		{
 			ContentSerializer = new SystemTextJsonContentSerializer(serializerOptions)

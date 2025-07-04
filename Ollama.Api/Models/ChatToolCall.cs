@@ -8,5 +8,5 @@ namespace Ollama.Api.Models;
 public class ChatToolCall
 {
 	[JsonPropertyName("function")]
-	public ChatToolFunction? Function { get; set; }
+	public required ChatToolFunctionCall Function { get; set; }
 }

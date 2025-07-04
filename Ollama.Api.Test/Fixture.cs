@@ -16,8 +16,8 @@ public class Fixture : TestBedFixture
 	/// <param name="services"></param>
 	/// <param name="configuration"></param>
 	protected override void AddServices(
-		IServiceCollection services,
-		IConfiguration? configuration)
+	IServiceCollection services,
+	IConfiguration? configuration)
 	{
 		if (_configuration is null)
 		{
@@ -25,8 +25,8 @@ public class Fixture : TestBedFixture
 		}
 
 		services
-			.AddScoped<CancellationTokenSource>()
-			.Configure<TestConfig>(_configuration.GetSection("Config"));
+		.AddScoped<CancellationTokenSource>()
+		.Configure<TestConfig>(_configuration.GetSection("Config"));
 
 		// Add a logger factory with minimum level Debug
 		services.AddLogging(builder =>
@@ -40,16 +40,16 @@ public class Fixture : TestBedFixture
 	protected override IEnumerable<TestAppSettings> GetTestAppSettings()
 	{
 		_configuration = new ConfigurationBuilder()
-		 .SetBasePath(Directory.GetCurrentDirectory())
-		 .AddUserSecrets<Fixture>()
-		 .Build();
+		.SetBasePath(Directory.GetCurrentDirectory())
+		.AddUserSecrets<Fixture>()
+		.Build();
 
 		return [
-		   new TestAppSettings
+			new TestAppSettings
 			{
 				IsOptional = true,
 				Filename = null,
 			}
-	   ];
+		];
 	}
 }

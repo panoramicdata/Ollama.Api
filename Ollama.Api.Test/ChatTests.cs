@@ -53,7 +53,7 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	{
 		var request = new ChatRequest
 		{
-			Model = "qwen2:7b",
+			Model = "hengwen/watt-tool-8B",
 			Messages =
 			[
 				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now?" }
@@ -96,10 +96,20 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 			]
 		};
 
-		var response = await OllamaClient.Chat.ChatAsync(request, CancellationToken.None);
+		var response = await OllamaClient
+			.Chat
+			.ChatAsync(request, CancellationToken.None);
+
 		response.Should().NotBeNull();
 		response.Message.Should().NotBeNull();
-		response.Message!.Content.Should().Contain("Paris");
+		response.Message.Content.Should().BeEmpty();
+		response.Message.ToolCalls.Should().HaveCount(1);
+		response.Message.ToolCalls[0].Function.Should().NotBeNull();
+		response.Message.ToolCalls[0].Function!.Name.Should().Be("get_current_city_weather");
+		response.Message.ToolCalls[0].Function.Arguments.Should().NotBeNull();
+		response.Message.ToolCalls[0].Function.Arguments.Should().HaveCount(2);
+		response.Message.ToolCalls[0].Function.Arguments["city"].Should().Be("Paris");
+		response.Message.ToolCalls[0].Function.Arguments["unit"].Should().Be("Celsius");
 	}
 
 
