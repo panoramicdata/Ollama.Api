@@ -10,6 +10,6 @@ public class ChatToolFunction
 	[JsonPropertyName("description")]
 	public string? Description { get; set; }
 
-	[JsonPropertyName("inputSchema")]
-	public ChatToolFunctionInputSchema? InputSchema { get; set; }
+	[JsonPropertyName("parameters")]
+	public ChatToolFunctionParameters? Parameters { get; set; }
 }

@@ -53,7 +53,7 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	{
 		var request = new ChatRequest
 		{
-			Model = "hengwen/watt-tool-8B",
+			Model = "llama3.1",
 			Messages =
 			[
 				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now?" }
@@ -65,9 +65,9 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 					Type = McpType.Function,
 					Function = new ChatToolFunction
 					{
-						Name = "get_current_city_weather",
-						Description = "Get the current weather for the specified city",
-						InputSchema = new ChatToolFunctionInputSchema
+						Name = "get_current_weather",
+						Description = "Get the current weather for a specified city. Use this when a user asks about the weather or temperature.",
+						Parameters = new ChatToolFunctionParameters
 						{
 							Type = McpType.Object,
 							Properties = new Dictionary<string, ChatToolFunctionInputSchemaProperty>
@@ -105,11 +105,11 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		response.Message.Content.Should().BeEmpty();
 		response.Message.ToolCalls.Should().HaveCount(1);
 		response.Message.ToolCalls[0].Function.Should().NotBeNull();
-		response.Message.ToolCalls[0].Function!.Name.Should().Be("get_current_city_weather");
+		response.Message.ToolCalls[0].Function!.Name.Should().Be("get_current_weather");
 		response.Message.ToolCalls[0].Function.Arguments.Should().NotBeNull();
 		response.Message.ToolCalls[0].Function.Arguments.Should().HaveCount(2);
-		response.Message.ToolCalls[0].Function.Arguments["city"].Should().Be("Paris");
-		response.Message.ToolCalls[0].Function.Arguments["unit"].Should().Be("Celsius");
+		response.Message.ToolCalls[0].Function.Arguments["city"]?.ToString().Should().Be("Paris");
+		response.Message.ToolCalls[0].Function.Arguments["unit"]?.ToString().Should().Be("Celsius");
 	}
 
 

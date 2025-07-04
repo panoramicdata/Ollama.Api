@@ -5,7 +5,7 @@ namespace Ollama.Api.Models;
 /// <summary>
 /// Represents the input schema for a chat tool function with required properties and annotations.
 /// </summary>
-public class ChatToolFunctionInputSchema
+public class ChatToolFunctionParameters
 {
 	/// <summary>
 	/// The type of the input schema. Should be "object" for tool schemas.
