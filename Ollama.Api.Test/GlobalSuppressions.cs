@@ -6,9 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage(
-	"Performance",
-	"CA1848:Use the LoggerMessage delegates",
-	Justification = "Performance gain not worth the development effort.",
-	Scope = "namespaceanddescendants",
-	Target = "~N:MagicSuite.Ai.EfCore.Test")
-]
+    "Performance",
+    "CA1848:Use the LoggerMessage delegates",
+    Justification = "Performance gain not worth the development effort."
+)]
