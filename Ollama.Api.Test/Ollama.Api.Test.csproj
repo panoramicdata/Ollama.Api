@@ -19,8 +19,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AwesomeAssertions" Version="9.0.0" />
-		<PackageReference Include="AwesomeAssertions.Analyzers" Version="9.0.0">
+		<PackageReference Include="AwesomeAssertions" Version="9.2.1" />
+		<PackageReference Include="AwesomeAssertions.Analyzers" Version="9.0.8">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -28,17 +28,17 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.10" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
 		<PackageReference Include="xunit" Version="2.9.3" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.1">
+		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.6" />
-		<PackageReference Include="Xunit.Microsoft.DependencyInjection" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
+		<PackageReference Include="Xunit.Microsoft.DependencyInjection" Version="9.2.2" />
 	</ItemGroup>
 
 	<ItemGroup>
