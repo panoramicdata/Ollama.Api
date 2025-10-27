@@ -80,12 +80,10 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 		return (base64EncodedImage, llavaModel);
 	}
 
-	private static GenerateRequest CreateImageDescriptionRequest(string model, string base64EncodedImage)
+	private static GenerateRequest CreateImageDescriptionRequest(string model, string base64EncodedImage) => new()
 	{
-		return new GenerateRequest
-		{
-			Model = model,
-			Prompt = """
+		Model = model,
+		Prompt = """
 Describe the animal in this image using the following JSON template:
 {
 	"animal": "<ANIMAL HERE>",
@@ -95,11 +93,10 @@ Describe the animal in this image using the following JSON template:
 	"name": "<GUESS THE ANIMAL's NAME HERE>",
 }
 """,
-			Images = [base64EncodedImage],
-			Stream = false,
-			Format = "json",
-		};
-	}
+		Images = [base64EncodedImage],
+		Stream = false,
+		Format = "json",
+	};
 
 	private static void AssertImageDescriptionResponse(GenerateResponse response, string expectedModel)
 	{

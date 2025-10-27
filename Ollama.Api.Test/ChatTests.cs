@@ -59,17 +59,15 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		AssertWeatherToolResponse(response);
 	}
 
-	private static ChatRequest CreateWeatherToolRequest()
+	private static ChatRequest CreateWeatherToolRequest() => new()
 	{
-		return new ChatRequest
-		{
-			Model = TestModels.GetModelName(ModelType.Llama31),
-			Messages =
+		Model = TestModels.GetModelName(ModelType.Llama31),
+		Messages =
 			[
 				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now?" }
 			],
-			Stream = false,
-			Tools =
+		Stream = false,
+		Tools =
 			[
 				new() {
 					Type = McpType.Function,
@@ -104,8 +102,7 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 					}
 				}
 			]
-		};
-	}
+	};
 
 	private static void AssertWeatherToolResponse(ChatResponse response)
 	{
