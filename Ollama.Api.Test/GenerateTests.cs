@@ -6,22 +6,20 @@ namespace Ollama.Api.Test;
 
 public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) : Test(fixture, testOutputHelper)
 {
-	private const string LlavaModel = "llava:latest";
-
 	[Fact]
 	public async Task MinimalGenerate_Succeeds()
 	{
 		// Act
 		var response = await OllamaClient.Generate.GenerateAsync(new GenerateRequest
 		{
-			Model = "llama3",
+			Model = TestModels.GetModelName(ModelType.Llama3),
 			Prompt = "Hello, how are you?",
 			Stream = false
 		}, CancellationToken);
 
 		// Assert
 		response.Should().NotBeNull();
-		response.Model.Should().Be("llama3");
+		response.Model.Should().Be(TestModels.GetModelName(ModelType.Llama3));
 		response.Response.Should().NotBeNullOrEmpty();
 		response.Done.Should().BeTrue();
 		response.Context.Should().NotBeNull();
@@ -62,13 +60,14 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 		// Make sure the model supports image input
 		var tagsResponse = await OllamaClient.Models.GetTagsAsync(CancellationToken);
 		tagsResponse.Should().NotBeNull();
-		var modelSupportsImages = tagsResponse.Models?.Any(m => string.Equals(m.Name, LlavaModel, StringComparison.OrdinalIgnoreCase)) ?? false;
-		modelSupportsImages.Should().BeTrue("The 'llava' model should be available for this test to run.");
+		var llavaModel = TestModels.GetModelName(ModelType.LlavaLatest);
+		var modelSupportsImages = tagsResponse.Models?.Any(m => string.Equals(m.Name, llavaModel, StringComparison.OrdinalIgnoreCase)) ?? false;
+		modelSupportsImages.Should().BeTrue($"The '{llavaModel}' model should be available for this test to run.");
 
 		// Act
 		var request = new GenerateRequest
 		{
-			Model = LlavaModel,
+			Model = llavaModel,
 			Prompt = """
 Describe the animal in this image using the following JSON template:
 {
@@ -88,7 +87,7 @@ Describe the animal in this image using the following JSON template:
 
 		// Assert
 		response.Should().NotBeNull();
-		response.Model.Should().Be(LlavaModel);
+		response.Model.Should().Be(llavaModel);
 		response.Response.Should().NotBeNullOrEmpty();
 		response.Done.Should().BeTrue();
 		response.Context.Should().NotBeNull();
@@ -108,7 +107,6 @@ Describe the animal in this image using the following JSON template:
 		animalDescription.Animal.Should().NotBeNullOrEmpty();
 		animalDescription.Color.Should().NotBeNullOrEmpty();
 		animalDescription.Mood.Should().NotBeNullOrEmpty();
-		animalDescription.Color.Should().NotBeNullOrEmpty();
 		animalDescription.Name.Should().NotBeNullOrEmpty();
 		animalDescription.Gender.Should().NotBeNullOrEmpty();
 	}

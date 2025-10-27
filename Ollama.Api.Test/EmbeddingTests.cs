@@ -11,7 +11,7 @@ public class EmbeddingTests(Fixture fixture, ITestOutputHelper testOutputHelper)
 		// Act
 		var response = await OllamaClient.Embeddings.GetEmbeddingsAsync(new EmbeddingRequest
 		{
-			Model = "nomic-embed-text",
+			Model = TestModels.GetModelName(ModelType.NomicEmbedText),
 			Prompt = "Hello, how are you?"
 		}, CancellationToken);
 

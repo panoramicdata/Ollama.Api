@@ -44,6 +44,28 @@ If you have Ollama installed on Windows, you can run a local server on port 1143
    ollama run llama3 "Hello, world!"
    ```
 
+### Downloading Models Required for Unit Tests
+
+If you plan to run the unit tests for this library, you'll need to download the following models:
+
+```powershell
+# General purpose language models
+ollama pull llama3:latest
+ollama pull llama3
+ollama pull llama3.1
+
+# Embedding model
+ollama pull nomic-embed-text
+
+# Multimodal model (supports images)
+ollama pull llava:latest
+```
+
+You can verify which models are installed using:
+```powershell
+ollama list
+```
+
 ### Configuring Ollama to Run on a Different Port
 
 If you need to run Ollama on a different port, set the `OLLAMA_HOST` environment variable before starting the server:
