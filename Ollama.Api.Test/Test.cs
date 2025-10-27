@@ -8,7 +8,6 @@ public class Test : TestBed<Fixture>, IAsyncDisposable
 {
 	protected static string TestModel => TestModels.GetModelName(ModelType.Llama3Latest);
 
-	private readonly TestConfig _testPortalConfig;
 	protected OllamaClient OllamaClient { get; }
 
 	protected ILogger Logger { get; }
@@ -26,11 +25,11 @@ public class Test : TestBed<Fixture>, IAsyncDisposable
 			.GetService<IOptions<TestConfig>>(testOutputHelper)
 			?? throw new InvalidOperationException("TestPortalConfig is null");
 
-		_testPortalConfig = testPortalConfigOptions.Value;
+		var testPortalConfig = testPortalConfigOptions.Value;
 
 		OllamaClient = new OllamaClient(new OllamaClientOptions
 		{
-			Uri = new Uri(_testPortalConfig.OllamaServer + ":" + _testPortalConfig.OllamaPort),
+			Uri = new Uri(testPortalConfig.OllamaServer + ":" + testPortalConfig.OllamaPort),
 			Logger = Logger
 		});
 	}

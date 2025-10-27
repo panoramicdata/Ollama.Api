@@ -17,5 +17,5 @@ public interface IEmbeddings
 	[Post("/api/embeddings")]
 	Task<EmbeddingResponse> GetEmbeddingsAsync(
 		EmbeddingRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

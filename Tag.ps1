@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 $force = $false
 if ($args -contains '--force') {
     $force = $true
-    Write-Host "[WARNING] --force specified: Will publish even if unit tests fail."
+    Write-Output "[WARNING] --force specified: Will publish even if unit tests fail."
 }
 
 # Variables
@@ -24,23 +24,23 @@ $nugetToken = Get-Content $tokenFile | Select-Object -First 1
 
 # Ensure nbgv is installed
 if (-not (Get-Command "nbgv" -ErrorAction SilentlyContinue)) {
-    Write-Host "nbgv not found. Installing..."
+    Write-Output "nbgv not found. Installing..."
     dotnet tool install -g nbgv
     $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
 }
 
 # Ensure git working directory is clean and up to date
-Write-Host "Checking git status..."
+Write-Output "Checking git status..."
 $gitStatus = git status --porcelain
 if ($gitStatus) {
     Write-Error "You have uncommitted changes. Please commit or stash them before running this script."
     exit 1
 }
 
-Write-Host "Fetching latest from origin..."
+Write-Output "Fetching latest from origin..."
 git fetch origin
 
-Write-Host "Checking for unpushed commits..."
+Write-Output "Checking for unpushed commits..."
 $localHash = git rev-parse '@'
 $remoteHash = git rev-parse '@{u}'
 if ($localHash -ne $remoteHash) {
@@ -49,7 +49,7 @@ if ($localHash -ne $remoteHash) {
 }
 
 # Build
-Write-Host "Building solution..."
+Write-Output "Building solution..."
 dotnet build $solution --configuration Release
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Build failed. Aborting release."
@@ -58,14 +58,14 @@ if ($LASTEXITCODE -ne 0) {
 
 # Test (skip if --force specified)
 if (-not $force) {
-    Write-Host "Running unit tests..."
+    Write-Output "Running unit tests..."
     $testResult = dotnet test $solution --configuration Release --no-build
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Unit tests failed. Aborting release. (Use --force to override)"
         exit 1
     }
 } else {
-    Write-Host "[INFO] Skipping unit tests due to --force."
+    Write-Output "[INFO] Skipping unit tests due to --force."
 }
 
 # Get version from Nerdbank.GitVersioning
@@ -78,13 +78,13 @@ if (-not $version) {
 }
 
 # Tag and push
-Write-Host "Tagging version v$version..."
+Write-Output "Tagging version v$version..."
 git tag v$version
-Write-Host "Pushing tags..."
+Write-Output "Pushing tags..."
 git push origin v$version
 
 # Pack
-Write-Host "Packing NuGet package..."
+Write-Output "Packing NuGet package..."
 dotnet pack $project --configuration Release --no-build -p:PackageVersion=$version
 
 # Publish
@@ -93,7 +93,7 @@ if (!(Test-Path $packagePath)) {
     Write-Error "NuGet package not found at $packagePath."
     exit 1
 }
-Write-Host "Publishing NuGet package..."
+Write-Output "Publishing NuGet package..."
 dotnet nuget push $packagePath --api-key $nugetToken --source https://api.nuget.org/v3/index.json
 
-Write-Host "Done."
+Write-Output "Done."

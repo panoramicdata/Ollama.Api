@@ -7,14 +7,13 @@ namespace Ollama.Api;
 public class OllamaClient : IDisposable
 {
 	private bool _disposedValue;
-	private readonly OllamaHttpClientHandler _httpClientHandler;
 	private readonly HttpClient _httpClient;
 
 	public OllamaClient(OllamaClientOptions ollamaClientOptions)
 	{
 		ArgumentNullException.ThrowIfNull(ollamaClientOptions);
-		_httpClientHandler = new OllamaHttpClientHandler(ollamaClientOptions);
-		_httpClient = new HttpClient(_httpClientHandler)
+		var httpClientHandler = new OllamaHttpClientHandler(ollamaClientOptions);
+		_httpClient = new HttpClient(httpClientHandler)
 		{
 			BaseAddress = ollamaClientOptions.Uri,
 			Timeout = TimeSpan.FromMinutes(30) // Some API calls such as model retrieval can take a very long time.

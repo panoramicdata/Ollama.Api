@@ -6,8 +6,8 @@ namespace Ollama.Api.Interfaces;
 public interface IUtility
 {
 	[Get("/api/version")]
-	Task<VersionResponse> GetVersionAsync(CancellationToken cancellationToken = default);
+	Task<VersionResponse> GetVersionAsync(CancellationToken cancellationToken);
 
 	[Get("/api/ps")]
-	Task<PsResponse> GetPsAsync(CancellationToken cancellationToken = default);
+	Task<PsResponse> GetPsAsync(CancellationToken cancellationToken);
 }

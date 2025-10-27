@@ -30,8 +30,7 @@ public interface IModels
 	[Post("/api/delete")]
 	Task<HttpResponseMessage> DeleteStreamInternalAsync(
 		DeleteModelRequest request,
-		CancellationToken cancellationToken = default);
-
+		CancellationToken cancellationToken);
 
 	[Post("/api/pull")]
 	Task<ModelOperationResponse> PullAsync(
@@ -41,8 +40,7 @@ public interface IModels
 	[Post("/api/pull")]
 	Task<HttpResponseMessage> PullStreamInternalAsync(
 		PullModelRequest request,
-		CancellationToken cancellationToken = default);
-
+		CancellationToken cancellationToken);
 
 	[Post("/api/push")]
 	Task<ModelOperationResponse> PushAsync(
@@ -52,7 +50,7 @@ public interface IModels
 	[Post("/api/push")]
 	Task<HttpResponseMessage> PushStreamInternalAsync(
 		PushModelRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	[Post("/api/create")]
 	Task<ModelOperationResponse> CreateAsync(
@@ -62,7 +60,7 @@ public interface IModels
 	[Post("/api/create")]
 	Task<HttpResponseMessage> CreateStreamInternalAsync(
 		CreateModelRequest request,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Gets a list of all models currently available in local Ollama storage.
@@ -107,8 +105,6 @@ public interface IModels
 			yield return update;
 		}
 	}
-
-
 
 	/// <summary>
 	/// Creates a new model based on the specified request, streaming updates as they occur.
@@ -162,7 +158,9 @@ public interface IModels
 			}
 
 			if (cancellationToken.IsCancellationRequested)
+			{
 				yield break;
+			}
 		}
 	}
 }

@@ -17,5 +17,5 @@ public interface IChat
 	[Post("/api/chat")]
 	Task<ChatResponse> ChatAsync(
 		ChatRequest chatRequest,
-		CancellationToken cancellationToken = default);
+		CancellationToken cancellationToken);
 }

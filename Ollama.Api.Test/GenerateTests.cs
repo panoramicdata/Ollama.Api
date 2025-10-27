@@ -54,22 +54,37 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 	public async Task Generate_DescribeImage_Succeeds()
 	{
 		// Arrange
+		var (base64EncodedImage, llavaModel) = await PrepareImageTestAsync();
+
+		// Act
+		var request = CreateImageDescriptionRequest(llavaModel, base64EncodedImage);
+		var response = await OllamaClient.Generate.GenerateAsync(request, CancellationToken);
+
+		// Assert
+		AssertImageDescriptionResponse(response, llavaModel);
+	}
+
+	private async Task<(string base64EncodedImage, string modelName)> PrepareImageTestAsync()
+	{
 		var imageFileInfo = new FileInfo("Images/Ollama Logo.png");
 		imageFileInfo.Exists.Should().BeTrue("Test image file should exist for this test to run.");
 		var imageBytes = await File.ReadAllBytesAsync(imageFileInfo.FullName, CancellationToken);
 		var base64EncodedImage = Convert.ToBase64String(imageBytes);
 
-		// Make sure the model supports image input
 		var tagsResponse = await OllamaClient.Models.GetTagsAsync(CancellationToken);
 		tagsResponse.Should().NotBeNull();
 		var llavaModel = TestModels.GetModelName(ModelType.LlavaLatest);
 		var modelSupportsImages = tagsResponse.Models?.Any(m => string.Equals(m.Name, llavaModel, StringComparison.OrdinalIgnoreCase)) ?? false;
 		modelSupportsImages.Should().BeTrue($"The '{llavaModel}' model should be available for this test to run.");
 
-		// Act
-		var request = new GenerateRequest
+		return (base64EncodedImage, llavaModel);
+	}
+
+	private static GenerateRequest CreateImageDescriptionRequest(string model, string base64EncodedImage)
+	{
+		return new GenerateRequest
 		{
-			Model = llavaModel,
+			Model = model,
 			Prompt = """
 Describe the animal in this image using the following JSON template:
 {
@@ -84,12 +99,12 @@ Describe the animal in this image using the following JSON template:
 			Stream = false,
 			Format = "json",
 		};
+	}
 
-		var response = await OllamaClient.Generate.GenerateAsync(request, CancellationToken);
-
-		// Assert
+	private static void AssertImageDescriptionResponse(GenerateResponse response, string expectedModel)
+	{
 		response.Should().NotBeNull();
-		response.Model.Should().Be(llavaModel);
+		response.Model.Should().Be(expectedModel);
 		response.Response.Should().NotBeNullOrEmpty();
 		response.Done.Should().BeTrue();
 		response.Context.Should().NotBeNull();
@@ -101,7 +116,6 @@ Describe the animal in this image using the following JSON template:
 		response.CreatedAt.Should().NotBeNull();
 		response.CreatedAt!.Value.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-5));
 
-		// Check if the response contains valid JSON
 		var jsonResponse = response.Response.Trim();
 		jsonResponse.Should().StartWith("{").And.EndWith("}");
 		var animalDescription = System.Text.Json.JsonSerializer.Deserialize<AnimalDescription>(jsonResponse);

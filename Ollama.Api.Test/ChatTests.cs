@@ -50,7 +50,18 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	[Fact]
 	public async Task ToolUse_Succeeds()
 	{
-		var request = new ChatRequest
+		var request = CreateWeatherToolRequest();
+
+		var response = await OllamaClient
+			.Chat
+			.ChatAsync(request, CancellationToken);
+
+		AssertWeatherToolResponse(response);
+	}
+
+	private static ChatRequest CreateWeatherToolRequest()
+	{
+		return new ChatRequest
 		{
 			Model = TestModels.GetModelName(ModelType.Llama31),
 			Messages =
@@ -94,11 +105,10 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 				}
 			]
 		};
+	}
 
-		var response = await OllamaClient
-			.Chat
-			.ChatAsync(request, CancellationToken);
-
+	private static void AssertWeatherToolResponse(ChatResponse response)
+	{
 		response.Should().NotBeNull();
 		response.Message.Should().NotBeNull();
 		response.Message.Content.Should().BeEmpty();
@@ -112,7 +122,6 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		response.Message.ToolCalls[0].Function.Arguments["unit"].Should().NotBeNull();
 		response.Message.ToolCalls[0].Function.Arguments["unit"]!.ToString().Should().Be("Celsius");
 	}
-
 
 	[Fact]
 	public async Task Chat_MissingModel_Returns404()

@@ -6,60 +6,6 @@ namespace Ollama.Api.Test;
 public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	: Test(fixture, testOutputHelper)
 {
-	//[Fact]
-	//public async Task ModelLifecycle_CreateCopyDelete_Succeeds()
-	//{
-	//	// Use unique names for the test
-	//	var testModel = $"test-model-{Guid.NewGuid():N}:v1";
-	//	var testModelCopy = $"{testModel}-copy";
-
-	//	// Precondition: Ensure base model exists
-	//	var tagsResponse = await OllamaClient.Models.GetTagsAsync(default);
-	//	tagsResponse.Should().NotBeNull();
-	//	var modelExists = tagsResponse.Models?.Any(m => string.Equals(m.Name, TestModel, StringComparison.OrdinalIgnoreCase)) ?? false;
-	//	if (!modelExists)
-	//	{
-	//		throw new InvalidOperationException($"Precondition not met: Required base model '{TestModel}' is not present in local storage.");
-	//	}
-
-	//	// 1. Create (streaming)
-	//	var createRequest = new CreateModelRequest
-	//	{
-	//		Name = testModel,
-	//		From = TestModel,
-	//		System = "test",
-	//		Path = null
-	//	};
-	//	var createResponses = new List<ModelOperationResponse>();
-	//	await foreach (var update in OllamaClient.Models.CreateAsStreamAsync(createRequest, default))
-	//	{
-	//		createResponses.Add(update);
-	//	}
-
-	//	createResponses.Should().NotBeEmpty();
-	//	var finalCreate = createResponses.Last();
-	//	finalCreate.Should().NotBeNull();
-	//	finalCreate.Status.Should().Be("success");
-
-	//	// 2. Copy
-	//	var copyRequest = new CopyModelRequest { Source = testModel, Destination = testModelCopy };
-	//	var copyResponse = await OllamaClient.Models.CopyAsync(copyRequest, default);
-	//	copyResponse.Should().NotBeNull();
-	//	finalCreate.Status.Should().Be("success");
-
-	//	// 3. Delete copy
-	//	var deleteCopyRequest = new DeleteModelRequest { Name = testModelCopy };
-	//	var deleteCopyResponse = await OllamaClient.Models.DeleteAsync(deleteCopyRequest, default);
-	//	deleteCopyResponse.Should().NotBeNull();
-	//	finalCreate.Status.Should().Be("success");
-
-	//	// 4. Delete original
-	//	var deleteRequest = new DeleteModelRequest { Name = testModel };
-	//	var deleteResponse = await OllamaClient.Models.DeleteAsync(deleteRequest, default);
-	//	deleteResponse.Should().NotBeNull();
-	//	finalCreate.Status.Should().Be("success");
-	//}
-
 	[Fact]
 	public async Task ShowModel_ReturnsModelInfo()
 	{
@@ -108,8 +54,6 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 		var response = await OllamaClient.Models.GetTagsAsync(CancellationToken);
 		response.Should().NotBeNull();
 		response.Models.Should().NotBeNull();
-		// Optionally check that at least one model exists
-		// response.Models.Should().NotBeEmpty();
 		foreach (var model in response.Models ?? [])
 		{
 			model.Name.Should().NotBeNullOrWhiteSpace();
