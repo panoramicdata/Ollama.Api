@@ -1,5 +1,9 @@
 # Ollama.Api
 
+[![Nuget](https://img.shields.io/nuget/v/Ollama.Api)](https://www.nuget.org/packages/Ollama.Api/)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/eaba65b3e3c54445b26507f317d4cbeb)](https://app.codacy.com/gh/panoramicdata/Ollama.Api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 <img src="Ollama.Api/Logo.png" alt="Ollama.Api Logo" align="right" width="120" />
 
 ## Overview
