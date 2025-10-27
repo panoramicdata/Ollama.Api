@@ -121,33 +121,39 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	public async Task ShowModel_MissingModel_Returns404()
 	{
 		var request = new ShowModelRequest { Name = "not-a-real-model:fake" };
-		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
-		{
-			await OllamaClient.Models.ShowAsync(request, CancellationToken);
-		});
-		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+		
+		// Act
+		var act = async () => await OllamaClient.Models.ShowAsync(request, CancellationToken);
+		
+		// Assert
+		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
+		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
 	}
 
 	[Fact]
 	public async Task DeleteModel_MissingModel_Returns405()
 	{
 		var request = new DeleteModelRequest { Name = "not-a-real-model:fake" };
-		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
-		{
-			await OllamaClient.Models.DeleteAsync(request, CancellationToken);
-		});
-		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.MethodNotAllowed);
+		
+		// Act
+		var act = async () => await OllamaClient.Models.DeleteAsync(request, CancellationToken);
+		
+		// Assert
+		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
+		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.MethodNotAllowed);
 	}
 
 	[Fact]
 	public async Task CopyModel_MissingSource_Returns404()
 	{
 		var request = new CopyModelRequest { Source = "not-a-real-model:fake", Destination = "copy-of-not-a-real-model:fake" };
-		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
-		{
-			await OllamaClient.Models.CopyAsync(request, CancellationToken);
-		});
-		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+		
+		// Act
+		var act = async () => await OllamaClient.Models.CopyAsync(request, CancellationToken);
+		
+		// Assert
+		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
+		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
 	}
 
 	[Fact]

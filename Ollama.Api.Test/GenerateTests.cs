@@ -41,11 +41,13 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 			Prompt = "test",
 			Stream = false
 		};
-		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
-		{
-			await OllamaClient.Generate.GenerateAsync(request, CancellationToken);
-		});
-		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+
+		// Act
+		var act = async () => await OllamaClient.Generate.GenerateAsync(request, CancellationToken);
+
+		// Assert
+		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
+		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
 	}
 
 	[Fact]

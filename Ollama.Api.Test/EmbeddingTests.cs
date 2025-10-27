@@ -28,10 +28,12 @@ public class EmbeddingTests(Fixture fixture, ITestOutputHelper testOutputHelper)
 			Model = "not-a-real-model:fake",
 			Prompt = "test"
 		};
-		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
-		{
-			await OllamaClient.Embeddings.GetEmbeddingsAsync(request, CancellationToken);
-		});
-		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+		
+		// Act
+		var act = async () => await OllamaClient.Embeddings.GetEmbeddingsAsync(request, CancellationToken);
+		
+		// Assert
+		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
+		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
 	}
 }

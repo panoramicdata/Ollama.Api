@@ -102,13 +102,15 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		response.Should().NotBeNull();
 		response.Message.Should().NotBeNull();
 		response.Message.Content.Should().BeEmpty();
-		response.Message.ToolCalls.Should().HaveCount(1);
+		response.Message.ToolCalls.Should().ContainSingle();
 		response.Message.ToolCalls[0].Function.Should().NotBeNull();
 		response.Message.ToolCalls[0].Function!.Name.Should().Be("get_current_weather");
 		response.Message.ToolCalls[0].Function.Arguments.Should().NotBeNull();
 		response.Message.ToolCalls[0].Function.Arguments.Should().HaveCount(2);
-		response.Message.ToolCalls[0].Function.Arguments["city"]?.ToString().Should().Be("Paris");
-		response.Message.ToolCalls[0].Function.Arguments["unit"]?.ToString().Should().Be("Celsius");
+		response.Message.ToolCalls[0].Function.Arguments["city"].Should().NotBeNull();
+		response.Message.ToolCalls[0].Function.Arguments["city"]!.ToString().Should().Be("Paris");
+		response.Message.ToolCalls[0].Function.Arguments["unit"].Should().NotBeNull();
+		response.Message.ToolCalls[0].Function.Arguments["unit"]!.ToString().Should().Be("Celsius");
 	}
 
 
@@ -121,10 +123,12 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 			Messages = [new ChatMessage { Role = "user", Content = "test" }],
 			Stream = false
 		};
-		var ex = await Assert.ThrowsAsync<Refit.ApiException>(async () =>
-		{
-			await OllamaClient.Chat.ChatAsync(request, CancellationToken);
-		});
-		ex.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+
+		// Act
+		var act = async () => await OllamaClient.Chat.ChatAsync(request, CancellationToken);
+
+		// Assert
+		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
+		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
 	}
 }
