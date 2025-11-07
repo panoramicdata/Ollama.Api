@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="CHANGELOG.md" />
+    <File Path="LICENSE" />
+    <File Path="Ollama.Api.dic" />
+    <File Path="README.md" />
+    <File Path="Tag.ps1" />
+    <File Path="version.json" />
+  </Folder>
+  <Project Path="Ollama.Api.Test/Ollama.Api.Test.csproj" />
+  <Project Path="Ollama.Api/Ollama.Api.csproj" />
+</Solution>
