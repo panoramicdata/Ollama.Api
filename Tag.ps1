@@ -11,7 +11,7 @@ if ($args -contains '--force') {
 }
 
 # Variables
-$solution = "Ollama.Api.sln"
+$solution = "Ollama.Api.slnx"
 $project = "Ollama.Api/Ollama.Api.csproj"
 $tokenFile = "nuget_token.txt"
 
