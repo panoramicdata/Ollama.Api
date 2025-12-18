@@ -13,11 +13,11 @@ if ($args -contains '--force') {
 # Variables
 $solution = "Ollama.Api.slnx"
 $project = "Ollama.Api/Ollama.Api.csproj"
-$tokenFile = "nuget_token.txt"
+$tokenFile = "nuget-key.txt"
 
 # Ensure token file exists
 if (!(Test-Path $tokenFile)) {
-    Write-Error "NuGet token file '$tokenFile' not found. Aborting."
+    Write-Error "NuGet key file '$tokenFile' not found. Aborting."
     exit 1
 }
 $nugetToken = Get-Content $tokenFile | Select-Object -First 1

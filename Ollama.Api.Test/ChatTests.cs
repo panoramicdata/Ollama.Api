@@ -9,36 +9,19 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	[Fact]
 	public async Task BasicChatCompletion_Succeeds()
 	{
-		var request = new ChatRequest
-		{
-			Model = TestModel,
-			Messages =
-			[
-				new ChatMessage { Role = "user", Content = "Hello, who are you?" }
-			],
-			Stream = false
-		};
+		var request = CreateBasicChatRequest("Hello, who are you?");
 
 		var response = await OllamaClient.Chat.ChatAsync(request, CancellationToken);
-		response.Should().NotBeNull();
-		response.Message.Should().NotBeNull();
-		response.Message!.Content.Should().NotBeNullOrWhiteSpace();
+		AssertBasicChatResponse(response);
 	}
 
 	[Fact]
 	public async Task MultiTurnChatCompletion_Succeeds()
 	{
-		var request = new ChatRequest
-		{
-			Model = TestModel,
-			Messages =
-			[
-				new ChatMessage { Role = "user", Content = "What is the capital of France?" },
-				new ChatMessage { Role = "assistant", Content = "The capital of France is Paris." },
-				new ChatMessage { Role = "user", Content = "And what about Germany?" }
-			],
-			Stream = false
-		};
+		var request = CreateBasicChatRequest(
+			new ChatMessage { Role = "user", Content = "What is the capital of France?" },
+			new ChatMessage { Role = "assistant", Content = "The capital of France is Paris." },
+			new ChatMessage { Role = "user", Content = "And what about Germany?" });
 
 		var response = await OllamaClient.Chat.ChatAsync(request, CancellationToken);
 		response.Should().NotBeNull();
@@ -136,5 +119,23 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		// Assert
 		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
 		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+	}
+
+	private static ChatRequest CreateBasicChatRequest(string userMessage)
+		=> CreateBasicChatRequest(new ChatMessage { Role = "user", Content = userMessage });
+
+	private static ChatRequest CreateBasicChatRequest(params ChatMessage[] messages)
+		=> new()
+		{
+			Model = TestModel,
+			Messages = [.. messages],
+			Stream = false
+		};
+
+	private static void AssertBasicChatResponse(ChatResponse response)
+	{
+		response.Should().NotBeNull();
+		response.Message.Should().NotBeNull();
+		response.Message!.Content.Should().NotBeNullOrWhiteSpace();
 	}
 }

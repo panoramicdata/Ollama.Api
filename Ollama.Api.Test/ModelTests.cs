@@ -19,11 +19,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	public async Task PullModel_AsStream_ReturnsSuccess()
 	{
 		var request = new PullModelRequest { Name = TestModel };
-		var responses = new List<ModelOperationResponse>();
-		await foreach (var update in OllamaClient.Models.PullAsStreamAsync(request, CancellationToken))
-		{
-			responses.Add(update);
-		}
+		var responses = await CollectStreamResponsesAsync(OllamaClient.Models.PullAsStreamAsync(request, CancellationToken));
 
 		responses.Should().NotBeEmpty();
 		var finalResponse = responses.Last();
@@ -36,11 +32,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	public async Task PushModel_AsStream_ReturnsSuccess()
 	{
 		var request = new PushModelRequest { Name = "myuser/mymodel:latest" };
-		var responses = new List<ModelOperationResponse>();
-		await foreach (var update in OllamaClient.Models.PushAsStreamAsync(request, CancellationToken))
-		{
-			responses.Add(update);
-		}
+		var responses = await CollectStreamResponsesAsync(OllamaClient.Models.PushAsStreamAsync(request, CancellationToken));
 
 		responses.Should().NotBeEmpty();
 		var finalResponse = responses.Last();
@@ -63,42 +55,21 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 
 	[Fact]
 	public async Task ShowModel_MissingModel_Returns404()
-	{
-		var request = new ShowModelRequest { Name = "not-a-real-model:fake" };
-		
-		// Act
-		var act = async () => await OllamaClient.Models.ShowAsync(request, CancellationToken);
-		
-		// Assert
-		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
-		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
-	}
+		=> await AssertApiExceptionAsync(
+			() => OllamaClient.Models.ShowAsync(new ShowModelRequest { Name = "not-a-real-model:fake" }, CancellationToken),
+			System.Net.HttpStatusCode.NotFound);
 
 	[Fact]
 	public async Task DeleteModel_MissingModel_Returns405()
-	{
-		var request = new DeleteModelRequest { Name = "not-a-real-model:fake" };
-		
-		// Act
-		var act = async () => await OllamaClient.Models.DeleteAsync(request, CancellationToken);
-		
-		// Assert
-		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
-		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.MethodNotAllowed);
-	}
+		=> await AssertApiExceptionAsync(
+			() => OllamaClient.Models.DeleteAsync(new DeleteModelRequest { Name = "not-a-real-model:fake" }, CancellationToken),
+			System.Net.HttpStatusCode.MethodNotAllowed);
 
 	[Fact]
 	public async Task CopyModel_MissingSource_Returns404()
-	{
-		var request = new CopyModelRequest { Source = "not-a-real-model:fake", Destination = "copy-of-not-a-real-model:fake" };
-		
-		// Act
-		var act = async () => await OllamaClient.Models.CopyAsync(request, CancellationToken);
-		
-		// Assert
-		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
-		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
-	}
+		=> await AssertApiExceptionAsync(
+			() => OllamaClient.Models.CopyAsync(new CopyModelRequest { Source = "not-a-real-model:fake", Destination = "copy-of-not-a-real-model:fake" }, CancellationToken),
+			System.Net.HttpStatusCode.NotFound);
 
 	[Fact]
 	public async Task CreateModelStream_InvalidBaseModel_HasError()
@@ -111,13 +82,25 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 			Path = null
 		};
 
-		var responses = new List<ModelOperationResponse>();
-		await foreach (var update in OllamaClient.Models.CreateAsStreamAsync(request, CancellationToken))
-		{
-			responses.Add(update);
-		}
+		var responses = await CollectStreamResponsesAsync(OllamaClient.Models.CreateAsStreamAsync(request, CancellationToken));
 
 		responses.Should().NotBeEmpty();
 		responses.Should().Contain(r => r.Error == null);
+	}
+
+	private static async Task<List<ModelOperationResponse>> CollectStreamResponsesAsync(IAsyncEnumerable<ModelOperationResponse> stream)
+	{
+		var responses = new List<ModelOperationResponse>();
+		await foreach (var update in stream)
+		{
+			responses.Add(update);
+		}
+		return responses;
+	}
+
+	private static async Task AssertApiExceptionAsync(Func<Task> action, System.Net.HttpStatusCode expectedStatusCode)
+	{
+		var exception = await action.Should().ThrowAsync<Refit.ApiException>();
+		exception.Which.StatusCode.Should().Be(expectedStatusCode);
 	}
 }

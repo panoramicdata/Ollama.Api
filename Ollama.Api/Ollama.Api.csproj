@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RepositoryUrl>https://github.com/panoramicdata/Ollama.Api</RepositoryUrl>
@@ -24,7 +24,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
 		<PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
