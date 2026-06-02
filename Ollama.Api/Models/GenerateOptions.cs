@@ -252,4 +252,10 @@ public class GenerateOptions
 	/// </summary>
 	[JsonPropertyName("vocab_only")]
 	public bool? VocabOnly { get; set; }
+
+	/// <summary>
+	/// Whether to think.
+	/// </summary>
+	[JsonPropertyName("think")]
+	public bool? Think { get; set; }
 }

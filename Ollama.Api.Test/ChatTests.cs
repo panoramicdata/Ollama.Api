@@ -52,6 +52,7 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 			response.Done.Should().BeTrue();
 			response.Message.Should().NotBeNull();
 			response.Message.ToolCalls.Should().NotBeEmpty();
+			response.Message.Thinking.Should().NotBeNull();
 		}
 		else
 		{
@@ -75,6 +76,8 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		Stream = false,
 		Format = null,
 		KeepAlive = null,
+		Options = new GenerateOptions {
+		},
 		Tools =
 			[
 				new() {

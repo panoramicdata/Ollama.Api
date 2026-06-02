@@ -3,9 +3,14 @@
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 		<RepositoryUrl>https://github.com/panoramicdata/Ollama.Api</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Description>.NET 10 library for interacting with Ollama-compatible AI model APIs. Provides strongly-typed interfaces for chat, text generation, embeddings, and model management.</Description>
+		<Copyright>Copyright © Panoramic Data Limited 2025</Copyright>
+		<PackageReadmeFile>../README.md</PackageReadmeFile>
+		<Description>.NET 9 library for interacting with Ollama-compatible AI model APIs. Provides strongly-typed interfaces for chat, text generation, embeddings, and model management.</Description>
+		<Authors>Panoramic Data Limited</Authors>
+		<Company>Panoramic Data Limited</Company>
 		<PackageId>Ollama.Api</PackageId>
 		<PackageTags>ollama;ai;api;dotnet;ml;machinelearning;chat;generation;embeddings</PackageTags>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -20,7 +25,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-		<PackageReference Include="Nerdbank.GitVersioning">
+		<PackageReference Include="Nerdbank.GitVersioning" >
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -28,9 +33,11 @@
 		<PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
 	</ItemGroup>
 
-	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-		<_Parameter1>Ollama.Api.Test</_Parameter1>
-	</AssemblyAttribute>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Ollama.Api.Test</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="../README.md" Pack="true" PackagePath="" />
