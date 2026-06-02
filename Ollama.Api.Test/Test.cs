@@ -6,7 +6,7 @@ namespace Ollama.Api.Test;
 
 public class Test : TestBed<Fixture>, IAsyncDisposable
 {
-	protected static string TestModel => TestModels.GetModelName(ModelType.Llama3Latest);
+	protected static string TestModel => TestModels.GetModelName(ModelType.Qwen352b);
 
 	protected OllamaClient OllamaClient { get; }
 
@@ -17,8 +17,7 @@ public class Test : TestBed<Fixture>, IAsyncDisposable
 	public Test(Fixture fixture, ITestOutputHelper testOutputHelper) : base(testOutputHelper, fixture)
 	{
 		// Logger
-		var loggerFactory = fixture.GetService<ILoggerFactory>(testOutputHelper) ?? throw new InvalidOperationException("LoggerFactory is null");
-		Logger = loggerFactory.CreateLogger(GetType());
+		Logger = CreateLogger(testOutputHelper);
 
 		// TestPortalConfig
 		var testPortalConfigOptions = fixture
@@ -32,6 +31,18 @@ public class Test : TestBed<Fixture>, IAsyncDisposable
 			Uri = new Uri(testPortalConfig.OllamaServer + ":" + testPortalConfig.OllamaPort),
 			Logger = Logger
 		});
+	}
+	private static ILogger CreateLogger(ITestOutputHelper testOutputHelper)
+	{
+		// Create a logger factory with XUnit output
+		var loggerFactory = LoggerFactory.Create(builder =>
+		{
+			builder
+				.AddProvider(new XunitLoggerProvider(testOutputHelper))
+				.SetMinimumLevel(LogLevel.Debug);
+		});
+
+		return loggerFactory.CreateLogger("Ollama.Api.Test");
 	}
 
 	public new async ValueTask DisposeAsync()

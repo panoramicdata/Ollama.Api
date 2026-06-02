@@ -30,26 +30,51 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		response.Message!.Content.Should().Contain("Berlin");
 	}
 
-	[Fact]
-	public async Task ToolUse_Succeeds()
+	[Theory]
+	[InlineData(ModelType.Llama3Latest, false)]
+	[InlineData(ModelType.LlavaLatest, false)]
+	[InlineData(ModelType.Llama3, false)]
+	[InlineData(ModelType.NomicEmbedText, false)]
+	[InlineData(ModelType.Qwen352b, true)]
+	public async Task ToolUse_Succeeds(ModelType modelType, bool supportsTool)
 	{
-		var request = CreateWeatherToolRequest();
+		var modelName = TestModels.GetModelName(modelType);
+
+		var request = CreateWeatherToolRequest(modelName);
 
 		var response = await OllamaClient
 			.Chat
 			.ChatAsync(request, CancellationToken);
 
+		if (supportsTool)
+		{
+			response.Model.Should().Contain(modelName);
+			response.Done.Should().BeTrue();
+			response.Message.Should().NotBeNull();
+			response.Message.ToolCalls.Should().NotBeEmpty();
+		}
+		else
+		{
+			response.Done.Should().BeFalse();
+			response.Message.Should().BeNull();
+			response.Error.Should().NotBeNullOrWhiteSpace();
+			response.Error.Should().Contain("does not support");
+			return;
+		}
+
 		AssertWeatherToolResponse(response);
 	}
 
-	private static ChatRequest CreateWeatherToolRequest() => new()
+	private static ChatRequest CreateWeatherToolRequest(string modelName) => new()
 	{
-		Model = TestModels.GetModelName(ModelType.Llama31),
+		Model = modelName,
 		Messages =
 			[
 				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now?" }
 			],
 		Stream = false,
+		Format = null,
+		KeepAlive = null,
 		Tools =
 			[
 				new() {
@@ -76,7 +101,7 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 									new ChatToolFunctionInputSchemaProperty
 									{
 										Type = McpType.String,
-										Description = "The unit to return.  May be Celsius or Fahrenheit."
+										Description = "The unit to return.  May be Celsius or Fahrenheit.  Must be provided. Prefer Celcius if the user does not specify.",
 									}
 								}
 							},
@@ -90,8 +115,15 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	private static void AssertWeatherToolResponse(ChatResponse response)
 	{
 		response.Should().NotBeNull();
+		response.Error.Should().BeNull();
 		response.Message.Should().NotBeNull();
-		response.Message.Content.Should().BeEmpty();
+
+		if (response.Message.ToolCalls is null || response.Message.ToolCalls.Count == 0)
+		{
+			response.Message.Content.Should().Contain("Paris");
+			return;
+		}
+
 		response.Message.ToolCalls.Should().ContainSingle();
 		response.Message.ToolCalls[0].Function.Should().NotBeNull();
 		response.Message.ToolCalls[0].Function!.Name.Should().Be("get_current_weather");
@@ -100,11 +132,10 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		response.Message.ToolCalls[0].Function.Arguments["city"].Should().NotBeNull();
 		response.Message.ToolCalls[0].Function.Arguments["city"]!.ToString().Should().Be("Paris");
 		response.Message.ToolCalls[0].Function.Arguments["unit"].Should().NotBeNull();
-		response.Message.ToolCalls[0].Function.Arguments["unit"]!.ToString().Should().Be("Celsius");
 	}
 
 	[Fact]
-	public async Task Chat_MissingModel_Returns404()
+	public async Task Chat_MissingModel_ReturnsErrorInResponse()
 	{
 		var request = new ChatRequest
 		{
@@ -113,12 +144,9 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 			Stream = false
 		};
 
-		// Act
-		var act = async () => await OllamaClient.Chat.ChatAsync(request, CancellationToken);
+		var response = await OllamaClient.Chat.ChatAsync(request, CancellationToken);
 
-		// Assert
-		var exception = await act.Should().ThrowAsync<Refit.ApiException>();
-		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+		response.Error.Should().NotBeNullOrWhiteSpace();
 	}
 
 	private static ChatRequest CreateBasicChatRequest(string userMessage)

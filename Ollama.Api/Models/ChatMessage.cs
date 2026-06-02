@@ -30,4 +30,10 @@ public class ChatMessage
 	/// </summary>
 	[JsonPropertyName("tool_calls")]
 	public List<ChatToolCall>? ToolCalls { get; set; }
+
+	/// <summary>
+	/// The model's internal thoughts that it wants to share with the user. This may include information about what the model is thinking, its plan, or its reasoning process. This field is optional and may not be present in all responses.
+	/// </summary>
+	[JsonPropertyName("thinking")]
+	public string? Thinking { get; set; }
 }

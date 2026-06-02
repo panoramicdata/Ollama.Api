@@ -37,4 +37,10 @@ public class ChatResponse : ResponseTimingBase
 	/// </summary>
 	[JsonPropertyName("done")]
 	public bool Done { get; set; }
+
+	/// <summary>
+	/// Error message returned by the API when the request cannot be processed.
+	/// </summary>
+	[JsonPropertyName("error")]
+	public string? Error { get; set; }
 }

@@ -16,11 +16,6 @@ public enum ModelType
 	Llama3,
 
 	/// <summary>
-	/// Llama 3.1 - General purpose language model with tool calling support
-	/// </summary>
-	Llama31,
-
-	/// <summary>
 	/// Nomic Embed Text - Specialized model for text embeddings
 	/// </summary>
 	NomicEmbedText,
@@ -28,7 +23,11 @@ public enum ModelType
 	/// <summary>
 	/// Llava latest version - Multimodal model supporting images
 	/// </summary>
-	LlavaLatest
+	LlavaLatest,
+	/// <summary>
+	/// Qwen 3.5 2b - Specialized model for code generation
+	/// </summary>
+	Qwen352b
 }
 
 /// <summary>
@@ -43,9 +42,9 @@ public static class TestModels
 	{
 		{ ModelType.Llama3Latest, "llama3:latest" },
 		{ ModelType.Llama3, "llama3" },
-		{ ModelType.Llama31, "llama3.1" },
 		{ ModelType.NomicEmbedText, "nomic-embed-text" },
-		{ ModelType.LlavaLatest, "llava:latest" }
+		{ ModelType.LlavaLatest, "llava:latest" },
+		{ ModelType.Qwen352b, "qwen3.5:2b" },
 	};
 
 	/// <summary>
