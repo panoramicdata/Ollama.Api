@@ -1,99 +1,50 @@
-# Tag.ps1
-# PowerShell script to build, test, tag, push, and publish NuGet package
+# Panoramic Data NuGet Publish Script (Standard)
+# Tags the current commit with the NBGV version and pushes to trigger CI/CD publishing.
+# Usage: .\Publish.ps1
 
 $ErrorActionPreference = 'Stop'
 
-# Parse arguments
-$force = $false
-if ($args -contains '--force') {
-    $force = $true
-    Write-Output "[WARNING] --force specified: Will publish even if unit tests fail."
-}
-
-# Variables
-$solution = "Ollama.Api.slnx"
-$project = "Ollama.Api/Ollama.Api.csproj"
-$tokenFile = "nuget-key.txt"
-
-# Ensure token file exists
-if (!(Test-Path $tokenFile)) {
-    Write-Error "NuGet key file '$tokenFile' not found. Aborting."
-    exit 1
-}
-$nugetToken = Get-Content $tokenFile | Select-Object -First 1
-
-# Ensure nbgv is installed
-if (-not (Get-Command "nbgv" -ErrorAction SilentlyContinue)) {
-    Write-Output "nbgv not found. Installing..."
-    dotnet tool install -g nbgv
-    $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
-}
-
-# Ensure git working directory is clean and up to date
-Write-Output "Checking git status..."
-$gitStatus = git status --porcelain
-if ($gitStatus) {
-    Write-Error "You have uncommitted changes. Please commit or stash them before running this script."
+# Check for clean working tree
+$status = git status --porcelain
+if ($status) {
+    Write-Error "Working tree is not clean. Commit or stash changes before publishing.`n$status"
     exit 1
 }
 
-Write-Output "Fetching latest from origin..."
-git fetch origin
-
-Write-Output "Checking for unpushed commits..."
-$localHash = git rev-parse '@'
-$remoteHash = git rev-parse '@{u}'
-if ($localHash -ne $remoteHash) {
-    Write-Error "Your branch is not in sync with origin. Please push or pull changes before running this script."
+# Ensure we are on the main branch
+$branch = git rev-parse --abbrev-ref HEAD
+if ($branch -ne 'main') {
+    Write-Error "Publishing is only supported from the 'main' branch (currently on '$branch')."
     exit 1
 }
 
-# Build
-Write-Output "Building solution..."
-dotnet build $solution --configuration Release
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Build failed. Aborting release."
+# Ensure local main is up to date with remote
+git fetch origin main --quiet
+$localHead = git rev-parse HEAD
+$remoteHead = git rev-parse origin/main
+if ($localHead -ne $remoteHead) {
+    Write-Error "Local branch is not up to date with origin/main. Pull or push first."
     exit 1
 }
 
-# Test (skip if --force specified)
-if (-not $force) {
-    Write-Output "Running unit tests..."
-    $testResult = dotnet test $solution --configuration Release --no-build
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Unit tests failed. Aborting release. (Use --force to override)"
-        exit 1
-    }
-} else {
-    Write-Output "[INFO] Skipping unit tests due to --force."
-}
+# Get version from NBGV
+$versionJson = nbgv get-version -f json | ConvertFrom-Json
+$version = $versionJson.SimpleVersion
 
-# Get version from Nerdbank.GitVersioning
-$nbgvOutput = nbgv get-version
-$versionLine = $nbgvOutput | Select-String 'NuGetPackageVersion:'
-$version = $versionLine -replace 'NuGetPackageVersion:\s*', '' -replace '\s', ''
 if (-not $version) {
-    Write-Error "Could not determine version from Nerdbank.GitVersioning."
+    Write-Error "Failed to determine version from nbgv."
     exit 1
 }
 
-# Tag and push
-Write-Output "Tagging version v$version..."
-git tag v$version
-Write-Output "Pushing tags..."
-git push origin v$version
-
-# Pack
-Write-Output "Packing NuGet package..."
-dotnet pack $project --configuration Release --no-build -p:PackageVersion=$version
-
-# Publish
-$packagePath = "Ollama.Api/bin/Release/Ollama.Api.$version.nupkg"
-if (!(Test-Path $packagePath)) {
-    Write-Error "NuGet package not found at $packagePath."
+# Check tag doesn't already exist
+$existingTag = git tag -l $version
+if ($existingTag) {
+    Write-Error "Tag '$version' already exists."
     exit 1
 }
-Write-Output "Publishing NuGet package..."
-dotnet nuget push $packagePath --api-key $nugetToken --source https://api.nuget.org/v3/index.json
 
-Write-Output "Done."
+Write-Host "Tagging as $version ..." -ForegroundColor Cyan
+git tag $version
+git push origin $version
+
+Write-Host "✅ Published tag $version — CI will build and push to NuGet." -ForegroundColor Green

@@ -149,9 +149,9 @@ public interface IModels
 		[EnumeratorCancellation] CancellationToken cancellationToken)
 	{
 		using var reader = new StreamReader(stream);
-		while (!reader.EndOfStream)
+		string? line;
+		while ((line = await reader.ReadLineAsync(cancellationToken)) is not null)
 		{
-			var line = await reader.ReadLineAsync(cancellationToken);
 			if (!string.IsNullOrWhiteSpace(line))
 			{
 				yield return JsonSerializer.Deserialize<T>(line)!;
