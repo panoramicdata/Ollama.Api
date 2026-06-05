@@ -16,7 +16,8 @@ internal sealed class ChatClient(IChatApi chatApi) : IChat
 		}
 
 		var response = apiResponse.Content ?? new ChatResponse();
-		response.Error ??= TryGetErrorMessage(apiResponse.Error) ?? apiResponse.Error?.ReasonPhrase;
+		var apiError = apiResponse.Error as ApiException;
+		response.Error ??= TryGetErrorMessage(apiError) ?? apiError?.ReasonPhrase ?? apiResponse.Error?.Message;
 		return response;
 	}
 
