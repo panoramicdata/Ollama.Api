@@ -39,7 +39,7 @@ public class OllamaClient : IDisposable
 		Generate = RestService.For<IGenerate>(_httpClient, refitSettings);
 		Embeddings = RestService.For<IEmbeddings>(_httpClient, refitSettings);
 		var chatApi = RestService.For<IChatApi>(_httpClient, refitSettings);
-		Chat = new ChatClient(chatApi);
+		Chat = new ChatClient(chatApi, _httpClient);
 		Models = RestService.For<IModels>(_httpClient, refitSettings);
 		Utility = RestService.For<IUtility>(_httpClient, refitSettings);
 	}

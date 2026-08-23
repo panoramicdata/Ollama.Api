@@ -1,11 +1,11 @@
-using Ollama.Api.Interfaces;
+﻿using Ollama.Api.Interfaces;
 using Ollama.Api.Models;
 using Refit;
 using System.Text.Json;
 
 namespace Ollama.Api;
 
-internal sealed class ChatClient(IChatApi chatApi) : IChat
+internal sealed class ChatClient(IChatApi chatApi, HttpClient httpClient) : IChat
 {
 	public async Task<ChatResponse> ChatAsync(ChatRequest chatRequest, CancellationToken cancellationToken)
 	{
@@ -19,6 +19,29 @@ internal sealed class ChatClient(IChatApi chatApi) : IChat
 		var apiError = apiResponse.Error as ApiException;
 		response.Error ??= TryGetErrorMessage(apiError) ?? apiError?.ReasonPhrase ?? apiResponse.Error?.Message;
 		return response;
+	}
+
+	public IAsyncEnumerable<ChatResponse> ChatStreamAsync(
+		ChatRequest chatRequest,
+		CancellationToken cancellationToken)
+	{
+		ArgumentNullException.ThrowIfNull(chatRequest);
+
+		// Copied rather than mutated: the caller's request object may be reused for a later
+		// non-streaming call, and quietly turning streaming on for that would be a surprising
+		// side effect.
+		var streamingRequest = new ChatRequest
+		{
+			Model = chatRequest.Model,
+			Messages = chatRequest.Messages,
+			Options = chatRequest.Options,
+			Tools = chatRequest.Tools,
+			Format = chatRequest.Format,
+			KeepAlive = chatRequest.KeepAlive,
+			Stream = true
+		};
+
+		return ChatStreamReader.ReadAsync(httpClient, streamingRequest, cancellationToken);
 	}
 
 	private static string? TryGetErrorMessage(ApiException? exception)
