@@ -36,6 +36,8 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	[InlineData(ModelType.Llama3, false)]
 	[InlineData(ModelType.NomicEmbedText, false)]
 	[InlineData(ModelType.Qwen352b, true)]
+	[InlineData(ModelType.Gemma4E2b, true)]
+	[InlineData(ModelType.Gemma4E4b, true)]
 	public async Task ToolUse_Succeeds(ModelType modelType, bool supportsTool)
 	{
 		var modelName = TestModels.GetModelName(modelType);

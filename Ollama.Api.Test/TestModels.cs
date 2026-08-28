@@ -24,10 +24,21 @@ public enum ModelType
 	/// Llava latest version - Multimodal model supporting images
 	/// </summary>
 	LlavaLatest,
+
 	/// <summary>
 	/// Qwen 3.5 2b - Specialized model for code generation
 	/// </summary>
-	Qwen352b
+	Qwen352b,
+
+	/// <summary>
+	/// Gemma 4 E2b Large language model with enhanced reasoning capabilities
+	/// </summary>
+	Gemma4E2b,
+
+	/// <summary>
+	/// Gemma 4 E4b Large language model with enhanced reasoning capabilities
+	/// </summary>
+	Gemma4E4b
 }
 
 /// <summary>
@@ -45,6 +56,8 @@ public static class TestModels
 		{ ModelType.NomicEmbedText, "nomic-embed-text" },
 		{ ModelType.LlavaLatest, "llava:latest" },
 		{ ModelType.Qwen352b, "qwen3.5:2b" },
+		{ ModelType.Gemma4E2b, "gemma4:e2b" },
+		{ ModelType.Gemma4E4b, "gemma4:e4b" },
 	};
 
 	/// <summary>
