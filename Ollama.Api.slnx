@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
@@ -9,6 +10,11 @@
     <File Path="Publish.ps1" />
     <File Path="README.md" />
     <File Path="version.json" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="SECURITY.md" />
   </Folder>
   <Project Path="Ollama.Api.Test/Ollama.Api.Test.csproj" />
   <Project Path="Ollama.Api/Ollama.Api.csproj" />

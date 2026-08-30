@@ -10,15 +10,25 @@ internal sealed class ChatClient(IChatApi chatApi, HttpClient httpClient) : ICha
 	public async Task<ChatResponse> ChatAsync(ChatRequest chatRequest, CancellationToken cancellationToken)
 	{
 		var apiResponse = await chatApi.ChatAsync(chatRequest, cancellationToken);
-		if (apiResponse.IsSuccessStatusCode)
+		var response = apiResponse.Content ?? new ChatResponse();
+
+		if (!apiResponse.IsSuccessStatusCode)
 		{
-			return apiResponse.Content ?? new ChatResponse();
+			response.Error ??= DescribeFailure(apiResponse);
 		}
 
-		var response = apiResponse.Content ?? new ChatResponse();
-		var apiError = apiResponse.Error as ApiException;
-		response.Error ??= TryGetErrorMessage(apiError) ?? apiError?.ReasonPhrase ?? apiResponse.Error?.Message;
 		return response;
+	}
+
+	/// <summary>
+	/// The most specific description of a failed call that the response carries: Ollama's own error
+	/// message where there is one, then the reason phrase, then whatever Refit reported.
+	/// </summary>
+	private static string? DescribeFailure(IApiResponse<ChatResponse> apiResponse)
+	{
+		var apiError = apiResponse.Error as ApiException;
+
+		return TryGetErrorMessage(apiError) ?? apiError?.ReasonPhrase ?? apiResponse.Error?.Message;
 	}
 
 	public IAsyncEnumerable<ChatResponse> ChatStreamAsync(

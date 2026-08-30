@@ -47,13 +47,7 @@ internal static class ChatStreamReader
 			// Reported the same way ChatAsync reports it - as a response carrying an error - so a
 			// consumer's enumeration does not have to distinguish a transport fault from a model
 			// refusal partway through a loop.
-			var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-			yield return new ChatResponse
-			{
-				Done = true,
-				Error = ExtractError(body) ?? response.ReasonPhrase ?? $"HTTP {(int)response.StatusCode}"
-			};
+			yield return await DescribeFailureAsync(response, cancellationToken).ConfigureAwait(false);
 
 			yield break;
 		}
@@ -68,20 +62,7 @@ internal static class ChatStreamReader
 				continue;
 			}
 
-			// Parsed outside the yield, because a yield cannot sit inside a catch block. A malformed
-			// line is reported rather than skipped: dropping chunks silently would show the user an
-			// answer with holes in it and no indication anything was lost.
-			ChatResponse? chunk = null;
-			string? parseError = null;
-
-			try
-			{
-				chunk = JsonSerializer.Deserialize<ChatResponse>(line, OllamaClient.JsonSerializerOptions);
-			}
-			catch (JsonException exception)
-			{
-				parseError = exception.Message;
-			}
+			var (chunk, parseError) = Parse(line);
 
 			if (parseError is not null)
 			{
@@ -105,6 +86,43 @@ internal static class ChatStreamReader
 			{
 				yield break;
 			}
+		}
+	}
+
+	/// <summary>
+	/// Turns a non-success response into the error-carrying <see cref="ChatResponse"/> the caller
+	/// receives in place of the stream.
+	/// </summary>
+	private static async Task<ChatResponse> DescribeFailureAsync(
+		HttpResponseMessage response,
+		CancellationToken cancellationToken)
+	{
+		var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+		return new ChatResponse
+		{
+			Done = true,
+			Error = ExtractError(body) ?? response.ReasonPhrase ?? $"HTTP {(int)response.StatusCode}"
+		};
+	}
+
+	/// <summary>
+	/// Deserialises one line of the stream, returning the parse failure rather than throwing.
+	/// </summary>
+	/// <remarks>
+	/// Separate from the iterator because a yield cannot sit inside a catch block. A malformed line
+	/// is reported rather than skipped: dropping chunks silently would show the user an answer with
+	/// holes in it and no indication anything was lost.
+	/// </remarks>
+	private static (ChatResponse? Chunk, string? ParseError) Parse(string line)
+	{
+		try
+		{
+			return (JsonSerializer.Deserialize<ChatResponse>(line, OllamaClient.JsonSerializerOptions), null);
+		}
+		catch (JsonException exception)
+		{
+			return (null, exception.Message);
 		}
 	}
 
