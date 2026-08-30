@@ -4,8 +4,18 @@ using System.Text.Json;
 
 namespace Ollama.Api.Test;
 
+/// <summary>
+/// Checks that recorded server responses deserialise into the models, without needing a
+/// server to be running.
+/// </summary>
+/// <param name="fixture">The shared fixture that supplies configuration and services.</param>
+/// <param name="testOutputHelper">Where log output for the test is written.</param>
 public class ResponseDeserializationTests(Fixture fixture, ITestOutputHelper testOutputHelper) : Test(fixture, testOutputHelper)
 {
+	/// <summary>
+	/// A Qwen 3.5 2b chat response, thinking and tool call included, round-trips into
+	/// <c>ChatResponse</c>.
+	/// </summary>
 	[Fact]
 	public async Task Qwen352b_Response_Deserializes()
 	{

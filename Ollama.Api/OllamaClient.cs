@@ -5,6 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace Ollama.Api;
 
+/// <summary>
+/// A client for a single Ollama server. Each area of the API is reached through one of its
+/// properties.
+/// </summary>
 public class OllamaClient : IDisposable
 {
 	private bool _disposedValue;
@@ -21,6 +25,11 @@ public class OllamaClient : IDisposable
 		}
 	};
 
+	/// <summary>
+	/// Creates a client for the server described by the supplied options.
+	/// </summary>
+	/// <param name="ollamaClientOptions">Where the server is, and where to log.</param>
+	/// <exception cref="ArgumentNullException"><paramref name="ollamaClientOptions"/> is null.</exception>
 	public OllamaClient(OllamaClientOptions ollamaClientOptions)
 	{
 		ArgumentNullException.ThrowIfNull(ollamaClientOptions);
@@ -59,6 +68,12 @@ public class OllamaClient : IDisposable
 	/// <inheritdoc />
 	public IUtility Utility { get; }
 
+	/// <summary>
+	/// Releases the underlying <see cref="HttpClient"/>.
+	/// </summary>
+	/// <param name="disposing">
+	/// True when called from <see cref="Dispose()"/>, false when called from a finalizer.
+	/// </param>
 	protected virtual void Dispose(bool disposing)
 	{
 		if (!_disposedValue)
@@ -72,6 +87,7 @@ public class OllamaClient : IDisposable
 		}
 	}
 
+	/// <inheritdoc />
 	public void Dispose()
 	{
 		// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method

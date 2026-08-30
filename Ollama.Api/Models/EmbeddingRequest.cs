@@ -44,6 +44,12 @@ public class EmbeddingRequest : IValidated
 	[JsonPropertyName("keep_alive")]
 	public string? KeepAlive { get; set; }
 
+	/// <summary>
+	/// Throws if the request does not carry exactly one of <c>Prompt</c> and <c>Input</c>.
+	/// </summary>
+	/// <exception cref="ArgumentException">
+	/// Both were supplied, or neither was.
+	/// </exception>
 	public void Validate()
 	{
 		// Either prompt or input must be provided, but not both or neither

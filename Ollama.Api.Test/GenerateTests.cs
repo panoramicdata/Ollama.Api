@@ -4,8 +4,16 @@ using System.Text.Json.Serialization;
 
 namespace Ollama.Api.Test;
 
+/// <summary>
+/// Exercises the /api/generate endpoint against a live Ollama server.
+/// </summary>
+/// <param name="fixture">The shared fixture that supplies configuration and services.</param>
+/// <param name="testOutputHelper">Where log output for the test is written.</param>
 public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) : Test(fixture, testOutputHelper)
 {
+	/// <summary>
+	/// A prompt with no options set returns generated text.
+	/// </summary>
 	[Fact]
 	public async Task MinimalGenerate_Succeeds()
 	{
@@ -32,6 +40,9 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 		response.CreatedAt!.Value.Should().BeAfter(DateTimeOffset.UtcNow.AddMinutes(-5));
 	}
 
+	/// <summary>
+	/// Generating against a model that is not installed returns 404.
+	/// </summary>
 	[Fact]
 	public async Task Generate_MissingModel_Returns404()
 	{
@@ -50,6 +61,9 @@ public class GenerateTests(Fixture fixture, ITestOutputHelper testOutputHelper) 
 		exception.Which.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
 	}
 
+	/// <summary>
+	/// A prompt carrying an image returns a description of it.
+	/// </summary>
 	[Fact]
 	public async Task Generate_DescribeImage_Succeeds()
 	{

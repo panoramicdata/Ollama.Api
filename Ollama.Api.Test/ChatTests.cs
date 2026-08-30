@@ -3,9 +3,17 @@ using Ollama.Api.Models;
 
 namespace Ollama.Api.Test;
 
+/// <summary>
+/// Exercises the /api/chat endpoint against a live Ollama server.
+/// </summary>
+/// <param name="testOutputHelper">Where log output for the test is written.</param>
+/// <param name="fixture">The shared fixture that supplies configuration and services.</param>
 public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 : Test(fixture, testOutputHelper)
 {
+	/// <summary>
+	/// A single-turn chat returns a non-empty assistant message.
+	/// </summary>
 	[Fact]
 	public async Task BasicChatCompletion_Succeeds()
 	{
@@ -15,6 +23,9 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		AssertBasicChatResponse(response);
 	}
 
+	/// <summary>
+	/// A conversation carrying earlier turns returns a reply that takes them into account.
+	/// </summary>
 	[Fact]
 	public async Task MultiTurnChatCompletion_Succeeds()
 	{
@@ -30,6 +41,11 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		response.Message!.Content.Should().Contain("Berlin");
 	}
 
+	/// <summary>
+	/// A model offered a weather tool calls it, where the model supports tool use.
+	/// </summary>
+	/// <param name="modelType">The model under test.</param>
+	/// <param name="supportsTool">Whether that model is expected to be able to call a tool.</param>
 	[Theory]
 	[InlineData(ModelType.Llama3Latest, false)]
 	[InlineData(ModelType.LlavaLatest, false)]
@@ -139,6 +155,10 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		response.Message.ToolCalls[0].Function.Arguments["unit"].Should().NotBeNull();
 	}
 
+	/// <summary>
+	/// Chatting to a model that is not installed reports the failure on the response rather than
+	/// throwing.
+	/// </summary>
 	[Fact]
 	public async Task Chat_MissingModel_ReturnsErrorInResponse()
 	{

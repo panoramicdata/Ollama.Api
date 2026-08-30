@@ -3,8 +3,16 @@ using Ollama.Api.Models;
 
 namespace Ollama.Api.Test;
 
+/// <summary>
+/// Exercises the /api/embeddings endpoint against a live Ollama server.
+/// </summary>
+/// <param name="fixture">The shared fixture that supplies configuration and services.</param>
+/// <param name="testOutputHelper">Where log output for the test is written.</param>
 public class EmbeddingTests(Fixture fixture, ITestOutputHelper testOutputHelper) : Test(fixture, testOutputHelper)
 {
+	/// <summary>
+	/// Embedding a prompt returns a vector.
+	/// </summary>
 	[Fact]
 	public async Task BasicEmbeddings_Succeeds()
 	{
@@ -20,6 +28,9 @@ public class EmbeddingTests(Fixture fixture, ITestOutputHelper testOutputHelper)
 		response.Embeddings.Should().NotBeNullOrEmpty();
 	}
 
+	/// <summary>
+	/// Embedding against a model that is not installed returns 404.
+	/// </summary>
 	[Fact]
 	public async Task Embeddings_MissingModel_Returns404()
 	{
