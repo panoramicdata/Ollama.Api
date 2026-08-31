@@ -1,5 +1,10 @@
 # Change Log
 
+* 2026-08-31 : 1.0.x
+	* Added OllamaClientOptions.ApiKey, sent as a bearer token. Optional: nothing is sent when it is
+	  absent, so a local Ollama needing no authentication is unaffected.
+	* Added OllamaClientOptions.Timeout, defaulting to the previous hardcoded 30 minutes. A zero or
+	  negative value is rejected rather than applied.
 * 2025-07-04 : 0.9.24
 	* Removed ToolCalls from root of ChatResponse.
 * 2025-07-04 : 0.9.24
