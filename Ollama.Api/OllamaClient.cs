@@ -33,11 +33,17 @@ public class OllamaClient : IDisposable
 	public OllamaClient(OllamaClientOptions ollamaClientOptions)
 	{
 		ArgumentNullException.ThrowIfNull(ollamaClientOptions);
-		var httpClientHandler = new OllamaHttpClientHandler(ollamaClientOptions);
-		_httpClient = new HttpClient(httpClientHandler)
+		// Authentication in front of logging: the logging handler is terminal, so anything that has to
+		// touch the request before it is sent has to sit above it.
+		var handler = new OllamaAuthenticationHandler(ollamaClientOptions.ApiKey)
+		{
+			InnerHandler = new OllamaHttpClientHandler(ollamaClientOptions)
+		};
+
+		_httpClient = new HttpClient(handler)
 		{
 			BaseAddress = ollamaClientOptions.Uri,
-			Timeout = TimeSpan.FromMinutes(30) // Some API calls such as model retrieval can take a very long time.
+			Timeout = ollamaClientOptions.EffectiveTimeout
 		};
 
 		var refitSettings = new RefitSettings
