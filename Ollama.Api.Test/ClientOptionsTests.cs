@@ -49,6 +49,9 @@ public class ClientOptionsTests
 		return recorder.LastRequest!;
 	}
 
+	/// <summary>
+	/// A configured key is sent as a bearer token.
+	/// </summary>
 	[Fact]
 	public async Task ApiKeySet_IsSentAsABearerToken()
 	{
@@ -58,6 +61,10 @@ public class ClientOptionsTests
 			new AuthenticationHeaderValue("Bearer", "sk-abc123"));
 	}
 
+	/// <summary>
+	/// No key — missing, empty or blank — means no Authorization header at all.
+	/// </summary>
+	/// <param name="apiKey">The configured key, in each of its absent forms.</param>
 	[Theory]
 	[InlineData(null)]
 	[InlineData("")]
@@ -70,6 +77,9 @@ public class ClientOptionsTests
 			"a local Ollama needs no authentication, and an empty Bearer would be rejected by one that does");
 	}
 
+	/// <summary>
+	/// With no timeout configured, the long-standing default applies.
+	/// </summary>
 	[Fact]
 	public void NoTimeoutGiven_KeepsTheLongDefault()
 		=> new OllamaClientOptions { Uri = _uri }
@@ -77,11 +87,18 @@ public class ClientOptionsTests
 				TimeSpan.FromMinutes(30),
 				"model retrieval can take a very long time, and that default predates this option");
 
+	/// <summary>
+	/// A configured timeout is the one applied.
+	/// </summary>
 	[Fact]
 	public void TimeoutGiven_IsUsed()
 		=> new OllamaClientOptions { Uri = _uri, Timeout = TimeSpan.FromMinutes(5) }
 			.EffectiveTimeout.Should().Be(TimeSpan.FromMinutes(5));
 
+	/// <summary>
+	/// A zero or negative timeout is refused rather than applied.
+	/// </summary>
+	/// <param name="seconds">The offending timeout, in seconds.</param>
 	[Theory]
 	[InlineData(0)]
 	[InlineData(-1)]
