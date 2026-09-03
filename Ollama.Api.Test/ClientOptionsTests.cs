@@ -26,6 +26,10 @@ public class ClientOptionsTests
 			HttpRequestMessage request,
 			CancellationToken cancellationToken)
 		{
+			// Observed rather than ignored: the signature is the base class's, so the parameter
+			// cannot be dropped, and a handler that answers a cancelled request is wrong anyway.
+			cancellationToken.ThrowIfCancellationRequested();
+
 			LastRequest = request;
 			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
 			{
