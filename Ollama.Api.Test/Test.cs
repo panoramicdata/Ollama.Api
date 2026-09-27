@@ -8,6 +8,11 @@ namespace Ollama.Api.Test;
 /// The base class for the test classes: builds an <see cref="OllamaClient"/> pointed at the server
 /// named in configuration, logging through the test's output.
 /// </summary>
+// Integration: every class derived from this base talks to a live Ollama server, whose address
+// comes from user secrets. CI has neither, so they are excluded there with Category!=Integration.
+// That includes ResponseDeserializationTests, which needs no server but inherits this constructor,
+// and the constructor builds a client from the configured address.
+[Trait("Category", "Integration")]
 public class Test : TestBed<Fixture>, IAsyncDisposable
 {
 	/// <summary>
