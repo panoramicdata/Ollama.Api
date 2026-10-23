@@ -89,7 +89,7 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 		Model = modelName,
 		Messages =
 			[
-				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now?" }
+				new ChatMessage { Role = "user", Content = "What is the temperature in Paris right now, in Celsius?" }
 			],
 		Stream = false,
 		Format = null,
