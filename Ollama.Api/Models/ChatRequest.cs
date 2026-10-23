@@ -32,6 +32,12 @@ public class ChatRequest
 	public GenerateOptions? Options { get; set; }
 
 	/// <summary>
+	/// Whether a model that can reason does so before it answers. Null leaves the model's default.
+	/// </summary>
+	[JsonPropertyName("think")]
+	public bool? Think { get; set; }
+
+	/// <summary>
 	/// Specifies the desired output format. Currently, the only supported value is "json".
 	/// </summary>
 	[JsonPropertyName("format")]

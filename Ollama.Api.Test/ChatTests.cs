@@ -156,6 +156,29 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	}
 
 	/// <summary>
+	/// With think off at the top level, a model that reasons by default answers within a small token
+	/// budget rather than spending it reasoning.
+	/// </summary>
+	[Fact]
+	public async Task ThinkOff_AnswersWithoutReasoning()
+	{
+		var request = new ChatRequest
+		{
+			Model = TestModels.GetModelName(ModelType.Qwen352b),
+			Messages = [new ChatMessage { Role = "user", Content = "What is the capital of France? Answer in one word." }],
+			Stream = false,
+			Think = false,
+			Options = new GenerateOptions { NumPredict = 40 }
+		};
+
+		var response = await OllamaClient.Chat.ChatAsync(request, CancellationToken);
+
+		response.Error.Should().BeNull();
+		response.Message!.Content.Should().NotBeNullOrWhiteSpace();
+		response.Message.Thinking.Should().BeNullOrEmpty();
+	}
+
+	/// <summary>
 	/// Chatting to a model that is not installed reports the failure on the response rather than
 	/// throwing.
 	/// </summary>

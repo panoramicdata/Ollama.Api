@@ -40,6 +40,12 @@ public class GenerateRequest
 	public GenerateOptions? Options { get; set; }
 
 	/// <summary>
+	/// Whether a model that can reason does so before it answers. Null leaves the model's default.
+	/// </summary>
+	[JsonPropertyName("think")]
+	public bool? Think { get; set; }
+
+	/// <summary>
 	/// Specifies the desired output format.
 	/// Currently, the only supported value is "json".
 	/// If set, Ollama will attempt to format the model's response as a valid JSON object.
