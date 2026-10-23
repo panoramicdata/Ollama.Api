@@ -37,22 +37,27 @@ internal sealed class ChatClient(IChatApi chatApi, HttpClient httpClient) : ICha
 	{
 		ArgumentNullException.ThrowIfNull(chatRequest);
 
-		// Copied rather than mutated: the caller's request object may be reused for a later
-		// non-streaming call, and quietly turning streaming on for that would be a surprising
-		// side effect.
-		var streamingRequest = new ChatRequest
-		{
-			Model = chatRequest.Model,
-			Messages = chatRequest.Messages,
-			Options = chatRequest.Options,
-			Tools = chatRequest.Tools,
-			Format = chatRequest.Format,
-			KeepAlive = chatRequest.KeepAlive,
-			Stream = true
-		};
-
-		return ChatStreamReader.ReadAsync(httpClient, streamingRequest, cancellationToken);
+		return ChatStreamReader.ReadAsync(httpClient, ToStreamingRequest(chatRequest), cancellationToken);
 	}
+
+	/// <summary>
+	/// A copy of the request with streaming turned on.
+	/// </summary>
+	/// <remarks>
+	/// Copied rather than mutated: the caller's request object may be reused for a later
+	/// non-streaming call, and quietly turning streaming on for that would be a surprising side effect.
+	/// </remarks>
+	internal static ChatRequest ToStreamingRequest(ChatRequest chatRequest) => new()
+	{
+		Model = chatRequest.Model,
+		Messages = chatRequest.Messages,
+		Options = chatRequest.Options,
+		Think = chatRequest.Think,
+		Tools = chatRequest.Tools,
+		Format = chatRequest.Format,
+		KeepAlive = chatRequest.KeepAlive,
+		Stream = true
+	};
 
 	private static string? TryGetErrorMessage(ApiException? exception)
 	{

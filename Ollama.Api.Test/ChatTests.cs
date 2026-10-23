@@ -179,6 +179,32 @@ public class ChatTests(ITestOutputHelper testOutputHelper, Fixture fixture)
 	}
 
 	/// <summary>
+	/// Think off reaches Ollama on a streamed chat too, so the model answers rather than reasoning.
+	/// </summary>
+	[Fact]
+	public async Task ThinkOff_StreamsAnAnswerWithoutReasoning()
+	{
+		var request = new ChatRequest
+		{
+			Model = TestModels.GetModelName(ModelType.Qwen352b),
+			Messages = [new ChatMessage { Role = "user", Content = "What is the capital of France? Answer in one word." }],
+			Think = false,
+			Options = new GenerateOptions { NumPredict = 40 }
+		};
+
+		var chunks = new List<ChatResponse>();
+
+		await foreach (var chunk in OllamaClient.Chat.ChatStreamAsync(request, CancellationToken))
+		{
+			chunks.Add(chunk);
+		}
+
+		chunks.Should().NotBeEmpty().And.OnlyContain(chunk => chunk.Error == null);
+		string.Concat(chunks.Select(chunk => chunk.Message?.Content)).Should().NotBeNullOrWhiteSpace();
+		string.Concat(chunks.Select(chunk => chunk.Message?.Thinking)).Should().BeEmpty();
+	}
+
+	/// <summary>
 	/// Chatting to a model that is not installed reports the failure on the response rather than
 	/// throwing.
 	/// </summary>
