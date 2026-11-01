@@ -124,7 +124,7 @@ public class InferenceOfflineTests
 		var transport = new StubTransport().Then(Respond.Streamed("application/x-ndjson", Stream));
 		using var client = Offline.Client(transport);
 
-		var chunks = await ToListAsync(client.Chat.ChatStreamAsync(new ChatRequest { Model = "x", Messages = [], Think = "low" }, Offline.Token));
+		var chunks = await client.Chat.ChatStreamAsync(new ChatRequest { Model = "x", Messages = [], Think = "low" }, Offline.Token).ToListAsync(Offline.Token);
 
 		chunks.Select(c => c.Message!.Content).Should().Equal("Hel", "lo");
 		transport.LastRequest.Json["stream"]!.GetValue<bool>().Should().BeTrue();
@@ -140,7 +140,7 @@ public class InferenceOfflineTests
 		var transport = new StubTransport().Then(Respond.Streamed("application/x-ndjson", "{not json}\n"));
 		using var client = Offline.Client(transport);
 
-		var chunks = await ToListAsync(client.Chat.ChatStreamAsync(new ChatRequest { Model = "x", Messages = [] }, Offline.Token));
+		var chunks = await client.Chat.ChatStreamAsync(new ChatRequest { Model = "x", Messages = [] }, Offline.Token).ToListAsync(Offline.Token);
 
 		chunks.Should().ContainSingle().Which.Error.Should().StartWith("Could not parse a streamed chat response");
 	}
@@ -159,7 +159,7 @@ public class InferenceOfflineTests
 		var transport = new StubTransport().Then(Respond.Json(HttpStatusCode.NotFound, body));
 		using var client = Offline.Client(transport);
 
-		var chunks = await ToListAsync(client.Chat.ChatStreamAsync(new ChatRequest { Model = "x", Messages = [] }, Offline.Token));
+		var chunks = await client.Chat.ChatStreamAsync(new ChatRequest { Model = "x", Messages = [] }, Offline.Token).ToListAsync(Offline.Token);
 
 		chunks.Should().ContainSingle().Which.Error.Should().Be(expected);
 	}
@@ -300,14 +300,4 @@ public class InferenceOfflineTests
 
 	private static string Serialize(ThinkValue value) => JsonSerializer.Serialize(value, OllamaClient.JsonSerializerOptions);
 
-	private static async Task<List<ChatResponse>> ToListAsync(IAsyncEnumerable<ChatResponse> chunks)
-	{
-		var list = new List<ChatResponse>();
-		await foreach (var chunk in chunks)
-		{
-			list.Add(chunk);
-		}
-
-		return list;
-	}
 }

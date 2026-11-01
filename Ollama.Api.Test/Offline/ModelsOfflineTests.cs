@@ -135,7 +135,7 @@ public class ModelsOfflineTests
 		var transport = new StubTransport().Then(Respond.Empty(HttpStatusCode.OK));
 		using var client = Offline.Client(transport);
 
-		var updates = await ToListAsync(client.Models.DeleteAsStreamAsync(new DeleteModelRequest { Model = "scratch:latest" }, Offline.Token));
+		var updates = await client.Models.DeleteAsStreamAsync(new DeleteModelRequest { Model = "scratch:latest" }, Offline.Token).ToListAsync(Offline.Token);
 
 		updates.Should().BeEmpty();
 		transport.LastRequest.Method.Should().Be(HttpMethod.Delete);
@@ -255,9 +255,9 @@ public class ModelsOfflineTests
 			.Then(Respond.Streamed("application/x-ndjson", Progress));
 		using var client = Offline.Client(transport);
 
-		var pulled = await ToListAsync(client.Models.PullAsStreamAsync(new PullModelRequest { Model = "d3:2b", Insecure = false, Stream = true, Digest = Digest }, Offline.Token));
-		var pushed = await ToListAsync(client.Models.PushAsStreamAsync(new PushModelRequest { Model = "me/d3", Insecure = false, Stream = true }, Offline.Token));
-		var created = await ToListAsync(client.Models.CreateAsStreamAsync(new CreateModelRequest { Model = "x", From = "d3:2b" }, Offline.Token));
+		var pulled = await client.Models.PullAsStreamAsync(new PullModelRequest { Model = "d3:2b", Insecure = false, Stream = true, Digest = Digest }, Offline.Token).ToListAsync(Offline.Token);
+		var pushed = await client.Models.PushAsStreamAsync(new PushModelRequest { Model = "me/d3", Insecure = false, Stream = true }, Offline.Token).ToListAsync(Offline.Token);
+		var created = await client.Models.CreateAsStreamAsync(new CreateModelRequest { Model = "x", From = "d3:2b" }, Offline.Token).ToListAsync(Offline.Token);
 
 		foreach (var updates in new[] { pulled, pushed, created })
 		{
@@ -321,14 +321,4 @@ public class ModelsOfflineTests
 		request.Model.Should().Be("d3:2b");
 	}
 
-	private static async Task<List<ModelOperationResponse>> ToListAsync(IAsyncEnumerable<ModelOperationResponse> updates)
-	{
-		var list = new List<ModelOperationResponse>();
-		await foreach (var update in updates)
-		{
-			list.Add(update);
-		}
-
-		return list;
-	}
 }

@@ -1,21 +1,12 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Ollama.Api.Models;
 
 /// <summary>
 /// Represents a request to generate text using a specified model and prompt.
 /// </summary>
-public class GenerateRequest
+public class GenerateRequest : InferenceRequest
 {
-	/// <summary>
-	/// The name of the model to use for generating the completion.
-	/// The model must be available on the server.
-	/// </summary>
-	/// <example>llama3.1</example>
-	/// <example>mistral</example>
-	[JsonPropertyName("model")]
-	public required string Model { get; set; }
-
 	/// <summary>
 	/// The initial text input that serves as the basis for the generated completion.
 	/// The quality and relevance of the generated text depend on the clarity and context provided in this prompt.
@@ -30,39 +21,6 @@ public class GenerateRequest
 	/// </summary>
 	[JsonPropertyName("stream")]
 	public bool Stream { get; set; }
-
-	/// <summary>
-	/// An object containing advanced model parameters to fine-tune the generation process.
-	/// These options override any defaults defined in the model's Modelfile.
-	/// See "Model Options" section for details.
-	/// </summary>
-	[JsonPropertyName("options")]
-	public GenerateOptions? Options { get; set; }
-
-	/// <summary>
-	/// Whether a model that can reason does so before it answers: true, false, or a level the model
-	/// names, such as "high". Null leaves the model's default.
-	/// </summary>
-	[JsonPropertyName("think")]
-	public ThinkValue? Think { get; set; }
-
-	/// <summary>
-	/// Whether to return the log probability of each generated token.
-	/// </summary>
-	[JsonPropertyName("logprobs")]
-	public bool? Logprobs { get; set; }
-
-	/// <summary>
-	/// How many of the likeliest alternatives to return at each position, when <see cref="Logprobs"/> is set.
-	/// </summary>
-	[JsonPropertyName("top_logprobs")]
-	public int? TopLogprobs { get; set; }
-
-	/// <summary>
-	/// The output format: the string "json", or a JSON schema object the response must match.
-	/// </summary>
-	[JsonPropertyName("format")]
-	public object? Format { get; set; }
 
 	/// <summary>
 	/// If true, the prompt is sent directly to the model without any built-in templating.
@@ -104,11 +62,4 @@ public class GenerateRequest
 	/// </summary>
 	[JsonPropertyName("context")]
 	public List<int>? Context { get; set; }
-
-	/// <summary>
-	/// Controls how long the model will stay loaded into memory following the request.
-	/// Can be a duration string (e.g., "5m", "10s") or an integer representing seconds. Defaults to "5m".
-	/// </summary>
-	[JsonPropertyName("keep_alive")]
-	public string? KeepAlive { get; set; }
 }

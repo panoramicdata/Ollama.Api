@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Ollama.Api.Models;
 
@@ -254,7 +254,7 @@ public class GenerateOptions
 	public bool? VocabOnly { get; set; }
 
 	/// <summary>
-	/// Whether to think. Ollama ignores it here: use <see cref="ChatRequest.Think"/> or <see cref="GenerateRequest.Think"/>.
+	/// Whether to think. Ollama ignores it here: use <see cref="InferenceRequest.Think"/> on the chat or generate request.
 	/// </summary>
 	[JsonPropertyName("think")]
 	[Obsolete("Ollama reads think only at the top level of a request and ignores it in options. Set ChatRequest.Think or GenerateRequest.Think instead.")]

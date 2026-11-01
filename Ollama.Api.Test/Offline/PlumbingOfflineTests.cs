@@ -16,15 +16,15 @@ public class PlumbingOfflineTests
 	[Fact]
 	public async Task Logging_JsonRequestAndResponse_AreLoggedInFull()
 	{
-		var logger = new ListLogger();
+		var output = new RecordingOutput();
 		var transport = new StubTransport().Then(Respond.Json("""{"version":"0.40.13"}"""));
-		using var client = Offline.Client(transport, logger);
+		using var client = Offline.Client(transport, output);
 
 		await client.Embeddings.EmbedAsync(new EmbedRequest { Model = "m", Input = ["logged-input"] }, Offline.Token);
 
-		logger.Messages.Should().HaveCount(2);
-		logger.Messages[0].Should().Contain("logged-input");
-		logger.Messages[1].Should().Contain("0.40.13");
+		output.Lines.Should().HaveCount(2);
+		output.Lines[0].Should().Contain("logged-input");
+		output.Lines[1].Should().Contain("0.40.13");
 	}
 
 	/// <summary>
@@ -33,17 +33,17 @@ public class PlumbingOfflineTests
 	[Fact]
 	public async Task Logging_StreamedAudio_IsLeftForTheCaller()
 	{
-		var logger = new ListLogger();
+		var output = new RecordingOutput();
 		var audioBytes = Respond.FixtureBytes("speech-start.wav");
 		var transport = new StubTransport().Then(Respond.Streamed("audio/wav", audioBytes));
-		using var client = Offline.Client(transport, logger);
+		using var client = Offline.Client(transport, output);
 
 		await using var audio = await client.Audio.CreateSpeechAsync(new SpeechRequest { Model = "m", Input = "i" }, Offline.Token);
 		using var copy = new MemoryStream();
 		await audio.Content.CopyToAsync(copy, Offline.Token);
 
 		copy.ToArray().Should().Equal(audioBytes);
-		logger.Messages[1].Should().Contain("no content logged");
+		output.Lines[1].Should().Contain("no content logged");
 	}
 
 	/// <summary>
@@ -52,14 +52,14 @@ public class PlumbingOfflineTests
 	[Fact]
 	public async Task Logging_MultipartUpload_IsNotRead()
 	{
-		var logger = new ListLogger();
+		var output = new RecordingOutput();
 		var transport = new StubTransport().Then(Respond.Fixture("transcription.json"));
-		using var client = Offline.Client(transport, logger);
+		using var client = Offline.Client(transport, output);
 		using var wav = new MemoryStream(Respond.FixtureBytes("speech-start.wav"));
 
 		await client.Audio.TranscribeAsync(new TranscriptionRequest { Model = "m", Audio = wav }, Offline.Token);
 
-		logger.Messages[0].Should().Contain("multipart/form-data content").And.NotContain("RIFF");
+		output.Lines[0].Should().Contain("multipart/form-data content").And.NotContain("RIFF");
 	}
 
 	/// <summary>
@@ -68,13 +68,13 @@ public class PlumbingOfflineTests
 	[Fact]
 	public async Task Logging_RequestWithoutBody_SaysSo()
 	{
-		var logger = new ListLogger();
+		var output = new RecordingOutput();
 		var transport = new StubTransport().Then(Respond.Json("""{"models":[]}"""));
-		using var client = Offline.Client(transport, logger);
+		using var client = Offline.Client(transport, output);
 
 		await client.Utility.GetPsAsync(Offline.Token);
 
-		logger.Messages[0].Should().Contain("with no content");
+		output.Lines[0].Should().Contain("with no content");
 	}
 
 	/// <summary>

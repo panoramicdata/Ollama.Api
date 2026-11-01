@@ -142,15 +142,15 @@ public class DecisionOfflineTests
 		var transport = new StubTransport().Then(Respond.Fixture(HttpStatusCode.BadRequest, "systemone-not-decision-model.json"));
 		using var client = Offline.Client(transport);
 
-		var act = () => client.Decisions.DecideAsync(new DecisionRequest
-		{
-			Model = "qwen3.5:2b",
-			State = "x",
-			Questions = new() { ["a"] = new NoulQuestion { Instructions = "Is it?" } }
-		}, Offline.Token);
+		var refusal = await Offline.ShouldBeRefusedAsync(
+			() => client.Decisions.DecideAsync(new DecisionRequest
+			{
+				Model = "qwen3.5:2b",
+				State = "x",
+				Questions = new() { ["a"] = new NoulQuestion { Instructions = "Is it?" } }
+			}, Offline.Token),
+			HttpStatusCode.BadRequest);
 
-		var thrown = await act.Should().ThrowAsync<ApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-		OllamaError.Extract(thrown.Which.Content).Should().Be("model \"qwen3.5:2b\" is not a llama.cpp decision model");
+		refusal.Should().Be("model \"qwen3.5:2b\" is not a llama.cpp decision model");
 	}
 }

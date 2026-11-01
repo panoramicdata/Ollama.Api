@@ -1,4 +1,6 @@
-using Microsoft.Extensions.Logging;
+using AwesomeAssertions;
+using Refit;
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -76,9 +78,11 @@ internal static class Respond
 {
 	private static readonly string _fixtures = Path.Combine(AppContext.BaseDirectory, "Fixtures");
 
-	public static string FixtureText(string name) => File.ReadAllText(Path.Combine(_fixtures, name));
+	public static string FixtureText(string name) => File.ReadAllText(FixturePath(name));
 
-	public static byte[] FixtureBytes(string name) => File.ReadAllBytes(Path.Combine(_fixtures, name));
+	public static byte[] FixtureBytes(string name) => File.ReadAllBytes(FixturePath(name));
+
+	private static string FixturePath(string name) => Path.Combine(_fixtures, Path.GetFileName(name));
 
 	public static HttpResponseMessage Json(string body) => Json(HttpStatusCode.OK, body);
 
@@ -156,23 +160,21 @@ internal sealed class NonSeekableStream(byte[] bytes) : Stream
 }
 
 /// <summary>
-/// Keeps every message logged at Debug or above.
+/// Test output that keeps every line written to it, so a test can read back what was logged.
 /// </summary>
-internal sealed class ListLogger : ILogger
+internal sealed class RecordingOutput : ITestOutputHelper
 {
-	public List<string> Messages { get; } = [];
+	public List<string> Lines { get; } = [];
 
-	public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+	public string Output => string.Join(Environment.NewLine, Lines);
 
-	public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Debug;
+	public void Write(string message) => Lines.Add(message);
 
-	public void Log<TState>(
-		LogLevel logLevel,
-		EventId eventId,
-		TState state,
-		Exception? exception,
-		Func<TState, Exception?, string> formatter)
-		=> Messages.Add(formatter(state, exception));
+	public void Write(string format, params object[] args) => Lines.Add(string.Format(CultureInfo.InvariantCulture, format, args));
+
+	public void WriteLine(string message) => Lines.Add(message);
+
+	public void WriteLine(string format, params object[] args) => Lines.Add(string.Format(CultureInfo.InvariantCulture, format, args));
 }
 
 /// <summary>
@@ -183,10 +185,25 @@ internal static class Offline
 	public static readonly Uri ServerUri = new("http://ollama.test:11434");
 
 	public static OllamaClient Client(StubTransport transport)
-		=> Client(transport, new ListLogger());
+		=> Client(transport, new RecordingOutput());
 
-	public static OllamaClient Client(StubTransport transport, ILogger logger)
-		=> new(new OllamaClientOptions { Uri = ServerUri, Logger = logger }, transport);
+	/// <summary>
+	/// A client that logs at Debug to <paramref name="output"/>.
+	/// </summary>
+	public static OllamaClient Client(StubTransport transport, RecordingOutput output)
+		=> new(new OllamaClientOptions { Uri = ServerUri, Logger = new XunitLogger(output, "Offline") }, transport);
 
 	public static CancellationToken Token => TestContext.Current.CancellationToken;
+
+	/// <summary>
+	/// Asserts that <paramref name="act"/> is refused with <paramref name="status"/>, returning the
+	/// message Ollama gave.
+	/// </summary>
+	public static async Task<string?> ShouldBeRefusedAsync(Func<Task> act, HttpStatusCode status)
+	{
+		var thrown = await act.Should().ThrowAsync<ApiException>();
+		thrown.Which.StatusCode.Should().Be(status);
+
+		return OllamaError.Extract(thrown.Which.Content);
+	}
 }

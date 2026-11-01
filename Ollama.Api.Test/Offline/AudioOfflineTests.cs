@@ -74,11 +74,11 @@ public class AudioOfflineTests
 		var transport = new StubTransport().Then(Respond.Fixture(HttpStatusCode.BadRequest, fixture));
 		using var client = Offline.Client(transport);
 
-		var act = () => client.Audio.CreateSpeechAsync(new SpeechRequest { Model = "lfm3-audio", Input = "Hi" }, Offline.Token);
+		var refusal = await Offline.ShouldBeRefusedAsync(
+			() => client.Audio.CreateSpeechAsync(new SpeechRequest { Model = "lfm3-audio", Input = "Hi" }, Offline.Token),
+			HttpStatusCode.BadRequest);
 
-		var thrown = await act.Should().ThrowAsync<ApiException>();
-		thrown.Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-		OllamaError.Extract(thrown.Which.Content).Should().StartWith(message);
+		refusal.Should().StartWith(message);
 	}
 
 	/// <summary>
@@ -187,13 +187,9 @@ public class AudioOfflineTests
 		using var client = Offline.Client(transport);
 		using var wav = new MemoryStream(_wavStart);
 
-		var events = new List<TranscriptionStreamEvent>();
-		await foreach (var streamEvent in client.Audio.TranscribeStreamAsync(
-			new TranscriptionRequest { Model = "lfm3-audio", Audio = wav },
-			Offline.Token))
-		{
-			events.Add(streamEvent);
-		}
+		var events = await client.Audio
+			.TranscribeStreamAsync(new TranscriptionRequest { Model = "lfm3-audio", Audio = wav }, Offline.Token)
+			.ToListAsync(Offline.Token);
 
 		events.Should().HaveCount(2);
 		events[0].Type.Should().Be("transcript.text.delta");
@@ -214,16 +210,13 @@ public class AudioOfflineTests
 		using var client = Offline.Client(transport);
 		using var wav = new MemoryStream(_wavStart);
 
-		var act = async () =>
-		{
-			await foreach (var _ in client.Audio.TranscribeStreamAsync(
-				new TranscriptionRequest { Model = "lfm3-audio", Audio = wav },
-				Offline.Token))
-			{
-			}
-		};
+		var refusal = await Offline.ShouldBeRefusedAsync(
+			async () => await client.Audio
+				.TranscribeStreamAsync(new TranscriptionRequest { Model = "lfm3-audio", Audio = wav }, Offline.Token)
+				.ToListAsync(Offline.Token),
+			HttpStatusCode.BadRequest);
 
-		(await act.Should().ThrowAsync<ApiException>()).Which.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+		refusal.Should().Be("no audio");
 	}
 
 	/// <summary>
