@@ -26,6 +26,12 @@ public abstract class ResponseTimingBase
 	public int? PromptEvalCount { get; set; }
 
 	/// <summary>
+	/// Number of prompt tokens read from the cache rather than evaluated.
+	/// </summary>
+	[JsonPropertyName("prompt_eval_cached_count")]
+	public int? PromptEvalCachedCount { get; set; }
+
+	/// <summary>
 	/// Duration to evaluate the prompt in nanoseconds.
 	/// </summary>
 	[JsonPropertyName("prompt_eval_duration")]

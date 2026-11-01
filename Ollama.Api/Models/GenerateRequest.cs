@@ -1,21 +1,12 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Ollama.Api.Models;
 
 /// <summary>
 /// Represents a request to generate text using a specified model and prompt.
 /// </summary>
-public class GenerateRequest
+public class GenerateRequest : InferenceRequest
 {
-	/// <summary>
-	/// The name of the model to use for generating the completion.
-	/// The model must be available on the server.
-	/// </summary>
-	/// <example>llama3.1</example>
-	/// <example>mistral</example>
-	[JsonPropertyName("model")]
-	public required string Model { get; set; }
-
 	/// <summary>
 	/// The initial text input that serves as the basis for the generated completion.
 	/// The quality and relevance of the generated text depend on the clarity and context provided in this prompt.
@@ -30,29 +21,6 @@ public class GenerateRequest
 	/// </summary>
 	[JsonPropertyName("stream")]
 	public bool Stream { get; set; }
-
-	/// <summary>
-	/// An object containing advanced model parameters to fine-tune the generation process.
-	/// These options override any defaults defined in the model's Modelfile.
-	/// See "Model Options" section for details.
-	/// </summary>
-	[JsonPropertyName("options")]
-	public GenerateOptions? Options { get; set; }
-
-	/// <summary>
-	/// Whether a model that can reason does so before it answers. Null leaves the model's default.
-	/// </summary>
-	[JsonPropertyName("think")]
-	public bool? Think { get; set; }
-
-	/// <summary>
-	/// Specifies the desired output format.
-	/// Currently, the only supported value is "json".
-	/// If set, Ollama will attempt to format the model's response as a valid JSON object.
-	/// The model itself must be instructed to produce JSON for this to be effective.
-	/// </summary>
-	[JsonPropertyName("format")]
-	public string? Format { get; set; }
 
 	/// <summary>
 	/// If true, the prompt is sent directly to the model without any built-in templating.
@@ -94,11 +62,4 @@ public class GenerateRequest
 	/// </summary>
 	[JsonPropertyName("context")]
 	public List<int>? Context { get; set; }
-
-	/// <summary>
-	/// Controls how long the model will stay loaded into memory following the request.
-	/// Can be a duration string (e.g., "5m", "10s") or an integer representing seconds. Defaults to "5m".
-	/// </summary>
-	[JsonPropertyName("keep_alive")]
-	public string? KeepAlive { get; set; }
 }

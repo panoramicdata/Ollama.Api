@@ -5,14 +5,8 @@ namespace Ollama.Api.Models;
 /// <summary>
 /// Represents a request to pull (download) a model from the Ollama library.
 /// </summary>
-public class PullModelRequest
+public class PullModelRequest : ModelRequest
 {
-	/// <summary>
-	/// The full name of the model to pull, including its tag (e.g., "llama3.1:latest").
-	/// </summary>
-	[JsonPropertyName("name")]
-	public required string Name { get; set; }
-
 	/// <summary>
 	/// If true, allows insecure connections to the model library. Use with caution and only if you are pulling from a trusted, private registry during development. Defaults to false.
 	/// </summary>
@@ -31,4 +25,3 @@ public class PullModelRequest
 	[JsonPropertyName("digest")]
 	public string? Digest { get; set; }
 }
-

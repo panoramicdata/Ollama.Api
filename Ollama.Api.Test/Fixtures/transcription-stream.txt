@@ -1,0 +1,4 @@
+data: {"delta":"Hello from panoramic data.","type":"transcript.text.delta"}
+
+data: {"text":"Hello from panoramic data.","type":"transcript.text.done"}
+

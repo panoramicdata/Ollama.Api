@@ -102,7 +102,7 @@ internal static class ChatStreamReader
 		return new ChatResponse
 		{
 			Done = true,
-			Error = ExtractError(body) ?? response.ReasonPhrase ?? $"HTTP {(int)response.StatusCode}"
+			Error = OllamaError.Extract(body) ?? response.ReasonPhrase ?? $"HTTP {(int)response.StatusCode}"
 		};
 	}
 
@@ -123,32 +123,6 @@ internal static class ChatStreamReader
 		catch (JsonException exception)
 		{
 			return (null, exception.Message);
-		}
-	}
-
-	/// <summary>
-	/// Pulls the message out of Ollama's <c>{"error": "..."}</c> body, or returns null if the body is
-	/// not that shape.
-	/// </summary>
-	private static string? ExtractError(string? body)
-	{
-		if (string.IsNullOrWhiteSpace(body))
-		{
-			return null;
-		}
-
-		try
-		{
-			using var document = JsonDocument.Parse(body);
-
-			return document.RootElement.TryGetProperty("error", out var error)
-				&& error.ValueKind == JsonValueKind.String
-					? error.GetString()
-					: body;
-		}
-		catch (JsonException)
-		{
-			return body;
 		}
 	}
 }

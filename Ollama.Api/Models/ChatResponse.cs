@@ -39,6 +39,12 @@ public class ChatResponse : ResponseTimingBase
 	public bool Done { get; set; }
 
 	/// <summary>
+	/// The log probability of each generated token, when the request set <c>logprobs</c>.
+	/// </summary>
+	[JsonPropertyName("logprobs")]
+	public List<Logprob>? Logprobs { get; set; }
+
+	/// <summary>
 	/// Error message returned by the API when the request cannot be processed.
 	/// </summary>
 	[JsonPropertyName("error")]

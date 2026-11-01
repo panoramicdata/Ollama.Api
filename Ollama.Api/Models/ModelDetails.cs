@@ -11,35 +11,41 @@ public class ModelDetails
 	/// The parent model this model was derived from.
 	/// </summary>
 	[JsonPropertyName("parent_model")]
-	public required string ParentModel { get; set; }
+	public string ParentModel { get; set; } = string.Empty;
 
 	/// <summary>
 	/// The format of the model (e.g., GGUF, GGML).
 	/// </summary>
 	[JsonPropertyName("format")]
-	public required string Format { get; set; }
+	public string Format { get; set; } = string.Empty;
 
 	/// <summary>
 	/// The family of the model (e.g., llama, mistral).
 	/// </summary>
 	[JsonPropertyName("family")]
-	public required string Family { get; set; }
+	public string Family { get; set; } = string.Empty;
 
 	/// <summary>
 	/// The families this model belongs to.
 	/// </summary>
 	[JsonPropertyName("families")]
-	public required string[] Families { get; set; }
+	public string[] Families { get; set; } = [];
 
 	/// <summary>
 	/// The parameter size of the model (e.g., 7B, 13B).
 	/// </summary>
 	[JsonPropertyName("parameter_size")]
-	public required string ParameterSize { get; set; }
+	public string ParameterSize { get; set; } = string.Empty;
 
 	/// <summary>
 	/// The quantization level of the model (e.g., Q4_0, Q5_1).
 	/// </summary>
 	[JsonPropertyName("quantization_level")]
-	public required string QuantizationLevel { get; set; }
+	public string QuantizationLevel { get; set; } = string.Empty;
+
+	/// <summary>
+	/// The engine that runs the model, such as <c>llamacpp</c> or <c>mlx</c>.
+	/// </summary>
+	[JsonPropertyName("runner")]
+	public string? Runner { get; set; }
 }

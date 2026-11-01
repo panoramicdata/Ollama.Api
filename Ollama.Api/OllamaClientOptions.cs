@@ -57,8 +57,8 @@ public class OllamaClientOptions
 	public TimeSpan EffectiveTimeout => Timeout switch
 	{
 		null => DefaultTimeout,
-		var t when t <= TimeSpan.Zero => throw new InvalidOperationException(
+		{ } t when t <= TimeSpan.Zero => throw new InvalidOperationException(
 			$"{nameof(Timeout)} must be positive; {t} would fail every call immediately."),
-		var t => t.Value
+		{ } t => t
 	};
 }

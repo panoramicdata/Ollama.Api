@@ -26,10 +26,29 @@ public class GenerateResponse : ResponseTimingBase
 	public string? Response { get; set; }
 
 	/// <summary>
+	/// The model's reasoning, when it thought before answering.
+	/// </summary>
+	[JsonPropertyName("thinking")]
+	public string? Thinking { get; set; }
+
+	/// <summary>
 	/// Indicates if the generation is complete.
 	/// </summary>
 	[JsonPropertyName("done")]
 	public bool Done { get; set; }
+
+	/// <summary>
+	/// Why generation stopped.
+	/// </summary>
+	[JsonPropertyName("done_reason")]
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public DoneReason? DoneReason { get; set; }
+
+	/// <summary>
+	/// The log probability of each generated token, when the request set <c>logprobs</c>.
+	/// </summary>
+	[JsonPropertyName("logprobs")]
+	public List<Logprob>? Logprobs { get; set; }
 
 	/// <summary>
 	/// The context window as a list of token IDs.
