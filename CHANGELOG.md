@@ -17,7 +17,9 @@
 	  prompt_eval_cached_count, and generate reports thinking and done_reason.
 	* Fixed Models.DeleteAsync, which sent POST and always failed with 405; it now sends DELETE.
 	* Requests about a model send `model` rather than the deprecated `name`. `Name` remains as an
-	  obsolete alias.
+	  obsolete alias: it still works, but its warning breaks a build that treats warnings as errors.
+	* Think is now ThinkValue? (a bool still converts implicitly) and Format is now object? (a string
+	  still converts implicitly); code that reads either back needs updating.
 	* The Debug request and response log no longer reads audio, multipart or event-stream bodies.
 * 2026-08-31 : 1.0.x
 	* Added OllamaClientOptions.ApiKey, sent as a bearer token. Optional: nothing is sent when it is
