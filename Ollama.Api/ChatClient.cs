@@ -1,7 +1,6 @@
 ﻿using Ollama.Api.Interfaces;
 using Ollama.Api.Models;
 using Refit;
-using System.Text.Json;
 
 namespace Ollama.Api;
 
@@ -25,11 +24,9 @@ internal sealed class ChatClient(IChatApi chatApi, HttpClient httpClient) : ICha
 	/// message where there is one, then the reason phrase, then whatever Refit reported.
 	/// </summary>
 	private static string? DescribeFailure(IApiResponse<ChatResponse> apiResponse)
-	{
-		var apiError = apiResponse.Error as ApiException;
-
-		return TryGetErrorMessage(apiError) ?? apiError?.ReasonPhrase ?? apiResponse.Error?.Message;
-	}
+		=> apiResponse.Error is ApiException apiError
+			? OllamaError.Extract(apiError.Content) ?? apiError.ReasonPhrase
+			: apiResponse.Error?.Message;
 
 	public IAsyncEnumerable<ChatResponse> ChatStreamAsync(
 		ChatRequest chatRequest,
@@ -53,32 +50,11 @@ internal sealed class ChatClient(IChatApi chatApi, HttpClient httpClient) : ICha
 		Messages = chatRequest.Messages,
 		Options = chatRequest.Options,
 		Think = chatRequest.Think,
+		Logprobs = chatRequest.Logprobs,
+		TopLogprobs = chatRequest.TopLogprobs,
 		Tools = chatRequest.Tools,
 		Format = chatRequest.Format,
 		KeepAlive = chatRequest.KeepAlive,
 		Stream = true
 	};
-
-	private static string? TryGetErrorMessage(ApiException? exception)
-	{
-		if (exception is null || string.IsNullOrWhiteSpace(exception.Content))
-		{
-			return null;
-		}
-
-		try
-		{
-			using var jsonDocument = JsonDocument.Parse(exception.Content);
-			if (jsonDocument.RootElement.TryGetProperty("error", out var errorProperty) && errorProperty.ValueKind == JsonValueKind.String)
-			{
-				return errorProperty.GetString();
-			}
-		}
-		catch (JsonException)
-		{
-			return exception.Content;
-		}
-
-		return exception.Content;
-	}
 }

@@ -38,7 +38,17 @@ public enum ModelType
 	/// <summary>
 	/// Gemma 4 E4b Large language model with enhanced reasoning capabilities
 	/// </summary>
-	Gemma4E4b
+	Gemma4E4b,
+
+	/// <summary>
+	/// LFM3 Audio - speech synthesis and recognition, the speech model that runs on Linux
+	/// </summary>
+	Lfm3Audio,
+
+	/// <summary>
+	/// d3 2b - the smallest d3 decision model
+	/// </summary>
+	D3
 }
 
 /// <summary>
@@ -58,6 +68,8 @@ public static class TestModels
 		{ ModelType.Qwen352b, "qwen3.5:2b" },
 		{ ModelType.Gemma4E2b, "gemma4:e2b" },
 		{ ModelType.Gemma4E4b, "gemma4:e4b" },
+		{ ModelType.Lfm3Audio, "lfm3-audio" },
+		{ ModelType.D3, "d3:2b" },
 	};
 
 	/// <summary>

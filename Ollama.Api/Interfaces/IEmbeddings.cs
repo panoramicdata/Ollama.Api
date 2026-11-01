@@ -9,7 +9,18 @@ namespace Ollama.Api.Interfaces;
 public interface IEmbeddings
 {
 	/// <summary>
-	/// Gets embeddings for the given input(s) using the specified model.
+	/// Gets one embedding per input text from <c>/api/embed</c>, normalised to unit length.
+	/// </summary>
+	/// <param name="request">The model and the texts to embed.</param>
+	/// <param name="cancellationToken">A cancellation token.</param>
+	[Post("/api/embed")]
+	Task<EmbedResponse> EmbedAsync(
+		EmbedRequest request,
+		CancellationToken cancellationToken);
+
+	/// <summary>
+	/// Gets embeddings for the given input(s) using the specified model, from the older
+	/// <c>/api/embeddings</c> endpoint. Prefer <see cref="EmbedAsync"/>.
 	/// </summary>
 	/// <param name="request">The embedding request containing model and input(s).</param>
 	/// <param name="cancellationToken">A cancellation token.</param>

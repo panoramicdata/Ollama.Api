@@ -35,6 +35,8 @@ public class RequestSerializationTests
 			Stream = false,
 			Options = new GenerateOptions { NumPredict = 40 },
 			Think = false,
+			Logprobs = true,
+			TopLogprobs = 2,
 			Format = "json",
 			Tools = [],
 			KeepAlive = "5m"

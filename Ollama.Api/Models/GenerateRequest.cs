@@ -40,19 +40,29 @@ public class GenerateRequest
 	public GenerateOptions? Options { get; set; }
 
 	/// <summary>
-	/// Whether a model that can reason does so before it answers. Null leaves the model's default.
+	/// Whether a model that can reason does so before it answers: true, false, or a level the model
+	/// names, such as "high". Null leaves the model's default.
 	/// </summary>
 	[JsonPropertyName("think")]
-	public bool? Think { get; set; }
+	public ThinkValue? Think { get; set; }
 
 	/// <summary>
-	/// Specifies the desired output format.
-	/// Currently, the only supported value is "json".
-	/// If set, Ollama will attempt to format the model's response as a valid JSON object.
-	/// The model itself must be instructed to produce JSON for this to be effective.
+	/// Whether to return the log probability of each generated token.
+	/// </summary>
+	[JsonPropertyName("logprobs")]
+	public bool? Logprobs { get; set; }
+
+	/// <summary>
+	/// How many of the likeliest alternatives to return at each position, when <see cref="Logprobs"/> is set.
+	/// </summary>
+	[JsonPropertyName("top_logprobs")]
+	public int? TopLogprobs { get; set; }
+
+	/// <summary>
+	/// The output format: the string "json", or a JSON schema object the response must match.
 	/// </summary>
 	[JsonPropertyName("format")]
-	public string? Format { get; set; }
+	public object? Format { get; set; }
 
 	/// <summary>
 	/// If true, the prompt is sent directly to the model without any built-in templating.

@@ -18,7 +18,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	[Fact]
 	public async Task ShowModel_ReturnsModelInfo()
 	{
-		var request = new ShowModelRequest { Name = TestModel };
+		var request = new ShowModelRequest { Model = TestModel };
 		var response = await OllamaClient.Models.ShowAsync(request, CancellationToken);
 		response.Should().NotBeNull();
 		response.Details.Should().NotBeNull();
@@ -30,7 +30,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	[Fact]
 	public async Task PullModel_AsStream_ReturnsSuccess()
 	{
-		var request = new PullModelRequest { Name = TestModel };
+		var request = new PullModelRequest { Model = TestModel };
 		var responses = await CollectStreamResponsesAsync(OllamaClient.Models.PullAsStreamAsync(request, CancellationToken));
 
 		responses.Should().NotBeEmpty();
@@ -46,7 +46,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	[Fact]
 	public async Task PushModel_AsStream_ReturnsSuccess()
 	{
-		var request = new PushModelRequest { Name = "myuser/mymodel:latest" };
+		var request = new PushModelRequest { Model = "myuser/mymodel:latest" };
 		var responses = await CollectStreamResponsesAsync(OllamaClient.Models.PushAsStreamAsync(request, CancellationToken));
 
 		responses.Should().NotBeEmpty();
@@ -77,17 +77,17 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	[Fact]
 	public async Task ShowModel_MissingModel_Returns404()
 		=> await AssertApiExceptionAsync(
-			() => OllamaClient.Models.ShowAsync(new ShowModelRequest { Name = "not-a-real-model:fake" }, CancellationToken),
+			() => OllamaClient.Models.ShowAsync(new ShowModelRequest { Model = "not-a-real-model:fake" }, CancellationToken),
 			System.Net.HttpStatusCode.NotFound);
 
 	/// <summary>
-	/// Deleting a model that is not installed returns 405.
+	/// Deleting a model that is not installed returns 404.
 	/// </summary>
 	[Fact]
-	public async Task DeleteModel_MissingModel_Returns405()
+	public async Task DeleteModel_MissingModel_Returns404()
 		=> await AssertApiExceptionAsync(
-			() => OllamaClient.Models.DeleteAsync(new DeleteModelRequest { Name = "not-a-real-model:fake" }, CancellationToken),
-			System.Net.HttpStatusCode.MethodNotAllowed);
+			() => OllamaClient.Models.DeleteAsync(new DeleteModelRequest { Model = "not-a-real-model:fake" }, CancellationToken),
+			System.Net.HttpStatusCode.NotFound);
 
 	/// <summary>
 	/// Copying from a source model that is not installed returns 404.
@@ -106,7 +106,7 @@ public class ModelManagementTests(ITestOutputHelper testOutputHelper, Fixture fi
 	{
 		var request = new CreateModelRequest
 		{
-			Name = "test-invalid-create:fake",
+			Model = "test-invalid-create:fake",
 			From = "not-a-real-model:fake",
 			System = "test",
 			Path = null

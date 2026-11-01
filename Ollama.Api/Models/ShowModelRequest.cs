@@ -5,11 +5,11 @@ namespace Ollama.Api.Models;
 /// <summary>
 /// Represents a request to fetch detailed information about a specific local model.
 /// </summary>
-public class ShowModelRequest
+public class ShowModelRequest : ModelRequest
 {
 	/// <summary>
-	/// The full name of the model to show, including its tag (e.g., "llama3.1:latest").
+	/// Whether to include the large fields, such as the tokenizer's vocabulary, in the model information.
 	/// </summary>
-	[JsonPropertyName("name")]
-	public required string Name { get; set; }
+	[JsonPropertyName("verbose")]
+	public bool? Verbose { get; set; }
 }

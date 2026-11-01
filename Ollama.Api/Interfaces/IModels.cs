@@ -31,17 +31,86 @@ public interface IModels
 	/// <summary>
 	/// Deletes a model and the data it holds.
 	/// </summary>
-	[Post("/api/delete")]
-	Task<ModelOperationResponse> DeleteAsync(
+	/// <returns>A response whose status is <c>success</c>.</returns>
+	/// <exception cref="ApiException">The model does not exist, or the server refused.</exception>
+	async Task<ModelOperationResponse> DeleteAsync(
 		DeleteModelRequest request,
+		CancellationToken cancellationToken)
+	{
+		// Ollama answers a successful delete with an empty body, so there is nothing to deserialise.
+		using var response = await DeleteInternalAsync(request, cancellationToken).ConfigureAwait(false);
+
+		return response.IsSuccessStatusCode
+			? new ModelOperationResponse { Status = "success" }
+			: throw response.Error!;
+	}
+
+	/// <summary>
+	/// Deletes a model, returning the raw response. Use <see cref="DeleteAsync"/>.
+	/// </summary>
+	[Delete("/api/delete")]
+	Task<IApiResponse> DeleteInternalAsync(
+		[Body] DeleteModelRequest request,
 		CancellationToken cancellationToken);
 
 	/// <summary>
 	/// Deletes a model. Returns the raw response so the corresponding As-stream method can read its newline-delimited progress updates.
 	/// </summary>
-	[Post("/api/delete")]
+	[Delete("/api/delete")]
 	Task<HttpResponseMessage> DeleteStreamInternalAsync(
-		DeleteModelRequest request,
+		[Body] DeleteModelRequest request,
+		CancellationToken cancellationToken);
+
+	/// <summary>
+	/// Whether the server already holds the blob with this digest, so that
+	/// <see cref="PushBlobAsync"/> can be skipped.
+	/// </summary>
+	/// <param name="digest">The blob's SHA-256 digest, as <c>sha256:</c> followed by 64 hex digits.</param>
+	/// <param name="cancellationToken">Cancels the call.</param>
+	/// <exception cref="HttpRequestException">The digest is malformed, or the server failed.</exception>
+	async Task<bool> BlobExistsAsync(string digest, CancellationToken cancellationToken)
+	{
+		using var response = await HeadBlobInternalAsync(digest, cancellationToken).ConfigureAwait(false);
+
+		if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+		{
+			return false;
+		}
+
+		response.EnsureSuccessStatusCode();
+
+		return true;
+	}
+
+	/// <summary>
+	/// Checks for a blob, returning the raw response. Use <see cref="BlobExistsAsync"/>.
+	/// </summary>
+	[Head("/api/blobs/{digest}")]
+	Task<HttpResponseMessage> HeadBlobInternalAsync(string digest, CancellationToken cancellationToken);
+
+	/// <summary>
+	/// Uploads a model file, such as a GGUF, so that <see cref="CreateAsync"/> can name it in
+	/// <see cref="CreateModelRequest.Files"/>.
+	/// </summary>
+	/// <param name="digest">The content's SHA-256 digest, as <c>sha256:</c> followed by 64 hex digits.</param>
+	/// <param name="content">The file's bytes. The caller keeps ownership of the stream.</param>
+	/// <param name="cancellationToken">Cancels the call.</param>
+	/// <exception cref="HttpRequestException">The digest does not match the content, or the server failed.</exception>
+	async Task PushBlobAsync(string digest, Stream content, CancellationToken cancellationToken)
+	{
+		using var body = new LeaveOpenStreamContent(content);
+		using var response = await PushBlobInternalAsync(digest, body, cancellationToken).ConfigureAwait(false);
+
+		response.EnsureSuccessStatusCode();
+	}
+
+	/// <summary>
+	/// Uploads a blob, returning the raw response. Use <see cref="PushBlobAsync"/>.
+	/// </summary>
+	[Post("/api/blobs/{digest}")]
+	Task<HttpResponseMessage> PushBlobInternalAsync(
+		string digest,
+		[Body] HttpContent content,
 		CancellationToken cancellationToken);
 
 	/// <summary>
@@ -156,12 +225,8 @@ public interface IModels
 	}
 
 	/// <summary>
-	/// Creates a new model based on the specified request, streaming updates as they occur.
-	/// The model's stream must be set to true
+	/// Deletes a model, yielding any status updates the server sends. A successful delete sends none.
 	/// </summary>
-	/// <param name="request"></param>
-	/// <param name="cancellationToken"></param>
-	/// <returns></returns>
 	public async IAsyncEnumerable<ModelOperationResponse> DeleteAsStreamAsync(
 		DeleteModelRequest request,
 		[EnumeratorCancellation] CancellationToken cancellationToken)
