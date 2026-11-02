@@ -46,6 +46,9 @@ public class OllamaClientOptions
 	/// </remarks>
 	public TimeSpan? Timeout { get; init; }
 
+	/// <summary>When true, the client refuses every request that would change the server, before sending it.</summary>
+	public bool IsReadOnly { get; set; }
+
 	/// <summary>
 	/// The timeout actually applied: <see cref="Timeout"/> where given, otherwise
 	/// <see cref="DefaultTimeout"/>.

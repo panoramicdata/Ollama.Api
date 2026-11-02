@@ -12,10 +12,42 @@ internal class OllamaHttpClientHandler(OllamaClientOptions ollamaClientOptions) 
 {
 	private readonly ILogger _logger = ollamaClientOptions.Logger;
 
+	// Inference and embedding calls use POST but change nothing on the server, so they are allowed by path.
+	private static readonly HashSet<string> _readOnlyPostPaths = new(StringComparer.OrdinalIgnoreCase)
+	{
+		"/api/chat",
+		"/api/generate",
+		"/api/embed",
+		"/api/embeddings",
+		"/api/show",
+		"/v1/systemone",
+		"/v1/audio/speech",
+		"/v1/audio/transcriptions",
+		"/v1/audio/translations"
+	};
+
+	private static bool ChangesServer(HttpRequestMessage request)
+	{
+		if (request.Method == HttpMethod.Get || request.Method == HttpMethod.Head || request.Method == HttpMethod.Options)
+		{
+			return false;
+		}
+
+		var path = request.RequestUri?.AbsolutePath.TrimEnd('/') ?? string.Empty;
+
+		return request.Method != HttpMethod.Post || !_readOnlyPostPaths.Contains(path);
+	}
+
 	protected override async Task<HttpResponseMessage> SendAsync(
 		HttpRequestMessage request,
 		CancellationToken cancellationToken)
 	{
+		if (ollamaClientOptions.IsReadOnly && ChangesServer(request))
+		{
+			throw new InvalidOperationException(
+				$"The client is read-only; {request.Method} {request.RequestUri?.AbsolutePath} would change the server.");
+		}
+
 		var requestId = Guid.NewGuid();
 		var logging = _logger.IsEnabled(LogLevel.Debug);
 
