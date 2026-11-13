@@ -6,8 +6,11 @@
 
 <img src="Ollama.Api/Logo.png" alt="Ollama.Api Logo" align="right" width="120" />
 
+
+Supports .NET 11.0.
+
 ## Overview
-Ollama.Api is a .NET 10 library for interacting with Ollama-compatible AI model APIs. It provides strongly-typed interfaces for chat, text generation, embeddings, speech, decision models and model management, making it easy to integrate advanced AI capabilities into your .NET applications.
+Ollama.Api is a .NET 11.0 library for interacting with Ollama-compatible AI model APIs. It provides strongly-typed interfaces for chat, text generation, embeddings, speech, decision models and model management, making it easy to integrate advanced AI capabilities into your .NET applications.
 
 Covers the native API and the audio and decision endpoints of Ollama 0.40.13.
 
@@ -20,7 +23,7 @@ Covers the native API and the audio and decision endpoints of Ollama 0.40.13.
 - Server status (version, loaded models) and Ollama cloud usage and balance
 - Strongly-typed request/response models
 - Async API using Refit
-- .NET 10 compatible
+- .NET 11.0 compatible
 
 ## Installation
 Add the NuGet package to your project:

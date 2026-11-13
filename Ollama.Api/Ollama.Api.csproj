@@ -9,7 +9,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright © Panoramic Data Limited 2025</Copyright>
     <PackageReadmeFile>../README.md</PackageReadmeFile>
-    <Description>.NET 10 library for interacting with Ollama-compatible AI model APIs. Provides strongly-typed interfaces for chat, text generation, embeddings, speech, decision models and model management.</Description>
+    <Description>.NET library for interacting with Ollama-compatible AI model APIs. Provides strongly-typed interfaces for chat, text generation, embeddings, speech, decision models and model management.</Description>
     <Authors>Panoramic Data Limited</Authors>
     <Company>Panoramic Data Limited</Company>
     <PackageId>Ollama.Api</PackageId>
