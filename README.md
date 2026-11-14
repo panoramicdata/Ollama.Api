@@ -6,6 +6,7 @@
 
 <img src="Ollama.Api/Logo.png" alt="Ollama.Api Logo" align="right" width="120" />
 
+> **Need help with APIs or .NET?** Panoramic Data are experts in APIs and .NET, and we can help with your development. [Contact us](https://www.panoramicdata.com/contact-us) or see our [software services](https://www.panoramicdata.com/services/software).
 
 Supports .NET 11.0.
 
